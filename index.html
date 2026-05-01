@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barraca 77 — IS TECNOLOGIA</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(180deg, #F0F8FF 0%, #FFFFFF 100%);
+    color: #003D5B;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+  }
+  /* Tela de bloqueio */
+  .tela-bloqueio {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(42,27,92,0.95);
+    z-index: 9999;
+    flex-direction: column; align-items: center; justify-content: center;
+    color: white; text-align: center; padding: 2rem;
+  }
+  .tela-bloqueio.show { display: flex; }
+  .tela-bloqueio h2 { font-size: 1.6rem; margin-bottom: 1rem; color: #FF8C42; }
+  .tela-bloqueio p { font-size: 1rem; margin-bottom: 1.5rem; max-width: 400px; }
+  .tela-bloqueio a {
+    background: #FF8C42; color: #003D5B;
+    padding: 12px 28px; border-radius: 30px;
+    text-decoration: none; font-weight: bold;
+    display: inline-block; margin-top: 0.5rem;
+  }
+  .bloqueio-email { margin-top: 1rem; font-size: 0.85rem; opacity: 0.85; }
+
+  /* Admin bar */
+  .admin-bar {
+    display: none;
+    background: #FF8C42; color: #003D5B;
+    text-align: center; padding: 10px;
+    font-weight: bold; font-size: 0.9rem;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .admin-bar.show { display: block; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #003D5B 0%, #0077A6 100%);
+    padding: 2rem 1rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 80px; height: 80px;
+    background-image: radial-gradient(circle, #FF8C42 2px, transparent 2px);
+    background-size: 12px 12px;
+    opacity: 0.4;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; left: -10px;
+    width: 80px; height: 80px;
+    background-image: radial-gradient(circle, #FF8C42 2px, transparent 2px);
+    background-size: 12px 12px;
+    opacity: 0.3;
+  }
+  .header-logo {
+    width: 200px; height: 200px;
+    margin: 0 auto 0.8rem;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 2;
+    filter: drop-shadow(0 0 20px rgba(255,215,0,0.5));
+  }
+  .header-titulo {
+    color: #FF8C42;
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    position: relative; z-index: 2;
+  }
+  .header-numero {
+    color: #FF8C42;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 0.2rem;
+    position: relative; z-index: 2;
+  }
+  .header-slogan {
+    color: white;
+    font-size: 0.85rem;
+    margin-top: 0.6rem;
+    opacity: 0.9;
+    position: relative; z-index: 2;
+  }
+  .header-endereco {
+    color: white;
+    font-size: 0.78rem;
+    margin-top: 0.4rem;
+    opacity: 0.85;
+    position: relative; z-index: 2;
+  }
+  .lang-bar {
+    display: flex; flex-wrap: wrap;
+    justify-content: center; gap: 6px;
+    margin-top: 1rem;
+    position: relative; z-index: 2;
+  }
+  .lang-btn {
+    background: rgba(255,215,0,0.2);
+    border: 1px solid #FF8C42;
+    color: #FF8C42;
+    padding: 6px 12px; border-radius: 20px;
+    font-size: 0.78rem; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn:hover, .lang-btn.active {
+    background: #FF8C42; color: #003D5B;
+    font-weight: bold;
+  }
+
+  /* Container & categorias */
+  .container { max-width: 720px; margin: 1.5rem auto; padding: 0 1rem; }
+  .categoria-titulo {
+    color: #003D5B;
+    font-size: 1.3rem;
+    font-weight: 900;
+    margin: 1.5rem 0 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 3px solid #FF8C42;
+    letter-spacing: 0.05em;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .categoria-titulo::before {
+    content: '🌊';
+    font-size: 1.4rem;
+  }
+
+  /* Cards */
+  .produto-card {
+    background: white;
+    border-radius: 14px;
+    padding: 0.9rem;
+    margin-bottom: 0.7rem;
+    display: flex; align-items: center; gap: 0.9rem;
+    box-shadow: 0 2px 12px rgba(42,27,92,0.08);
+    border-left: 4px solid #FF8C42;
+    transition: transform 0.2s;
+    animation: fadeUp 0.4s ease backwards;
+  }
+  .produto-card:hover { transform: translateX(3px); }
+  .produto-card.inativo { opacity: 0.45; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .produto-img, .produto-img-placeholder {
+    width: 70px; height: 70px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+  .produto-img-placeholder {
+    background: linear-gradient(135deg, #FF8C42, #FF8C42);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+  }
+  .produto-info { flex: 1; min-width: 0; }
+  .produto-nome {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #003D5B;
+    margin-bottom: 2px;
+  }
+  .produto-comp {
+    font-size: 0.82rem;
+    color: #666;
+    line-height: 1.3;
+  }
+  .produto-comp-principal {
+    color: #003D5B;
+    font-weight: 600;
+    font-size: 0.88rem;
+  }
+  .produto-comp-pt {
+    color: #999;
+    font-size: 0.75rem;
+    font-style: italic;
+    margin-top: 2px;
+  }
+  .esgotado {
+    display: inline-block;
+    background: #d32f2f; color: white;
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 0.7rem; font-weight: bold;
+    margin-top: 4px;
+  }
+  .produto-preco {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: #003D5B;
+    background: #FF8C42;
+    padding: 4px 10px; border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  /* Toggle admin */
+  .toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #ccc; transition: .3s; border-radius: 24px;
+  }
+  .toggle-slider::before {
+    position: absolute; content: "";
+    height: 18px; width: 18px;
+    left: 3px; bottom: 3px;
+    background: white; transition: .3s; border-radius: 50%;
+  }
+  .toggle input:checked + .toggle-slider { background: #4CAF50; }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+  /* Carrinho/Pedido */
+  .btn-pedido-container {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    z-index: 50;
+  }
+  .btn-pedido-container.show { display: flex; animation: pulse 1.5s infinite; }
+  .btn-limpar {
+    background: #FFFFFF;
+    color: #C0392B;
+    border: 2px solid #C0392B;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(192,57,43,0.3);
+    transition: transform 0.15s, background 0.15s, color 0.15s;
+  }
+  .btn-limpar:hover { transform: scale(1.1); background: #C0392B; color: white; }
+  .btn-pedido {
+    background: #FF8C42; color: #003D5B;
+    border: 3px solid #003D5B;
+    padding: 14px 22px;
+    border-radius: 50px;
+    font-weight: 900; font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,61,91,0.4);
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .qtd-btn {
+    background: #003D5B; color: #FF8C42;
+    border: none; width: 28px; height: 28px;
+    border-radius: 50%; font-weight: bold; font-size: 1rem;
+    cursor: pointer;
+  }
+  .qtd-display {
+    display: inline-block; min-width: 24px;
+    text-align: center; font-weight: bold;
+    color: #003D5B;
+  }
+
+  /* Modal pedido */
+  .modal-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-pedido {
+    background: white;
+    border-radius: 16px;
+    max-width: 420px; width: 100%;
+    max-height: 85vh; overflow-y: auto;
+    padding: 1.5rem;
+  }
+  .modal-pedido h2 {
+    color: #003D5B;
+    border-bottom: 3px solid #FF8C42;
+    padding-bottom: 0.5rem; margin-bottom: 1rem;
+  }
+  .item-pedido {
+    display: flex; justify-content: space-between;
+    padding: 0.5rem 0; border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+  }
+  .item-pedido-completo {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 6px 12px;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+  }
+  .item-info { grid-column: 1; grid-row: 1; }
+  .item-nome { font-weight: 700; color: #003D5B; font-size: 0.95rem; }
+  .item-preco-unit { font-size: 0.75rem; color: #888; margin-top: 2px; }
+  .item-subtotal {
+    grid-column: 2; grid-row: 1;
+    font-weight: 900; color: #003D5B;
+    background: #FF8C42;
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 0.95rem; white-space: nowrap;
+  }
+  .item-controles {
+    grid-column: 1 / -1; grid-row: 2;
+    display: flex; align-items: center; gap: 8px;
+    padding-top: 4px;
+  }
+  .qtd-btn-modal {
+    background: #003D5B; color: #FF8C42;
+    border: none; width: 28px; height: 28px;
+    border-radius: 50%; font-weight: bold; font-size: 1rem;
+    cursor: pointer; transition: transform 0.1s;
+  }
+  .qtd-btn-modal:hover { transform: scale(1.1); }
+  .qtd-display-modal {
+    display: inline-block; min-width: 30px;
+    text-align: center; font-weight: bold;
+    color: #003D5B; font-size: 1rem;
+  }
+  .btn-excluir-item {
+    background: transparent; color: #C0392B;
+    border: 1px solid #C0392B;
+    width: 32px; height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-left: auto;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-excluir-item:hover { background: #C0392B; color: white; }
+  .total-pedido {
+    font-size: 1.2rem; font-weight: 900;
+    color: #003D5B; text-align: right;
+    margin-top: 1rem; padding-top: 0.8rem;
+    border-top: 2px solid #FF8C42;
+  }
+  .modal-pedido input {
+    width: 100%; padding: 10px;
+    border: 2px solid #003D5B;
+    border-radius: 8px; margin: 8px 0;
+    font-size: 1rem;
+  }
+  .modal-pedido label {
+    display: block; margin-top: 0.8rem;
+    font-weight: bold; color: #003D5B;
+    font-size: 0.9rem;
+  }
+  .modal-btns { display: flex; gap: 8px; margin-top: 1rem; }
+  .btn-confirmar, .btn-cancelar {
+    flex: 1; padding: 12px;
+    border: none; border-radius: 8px;
+    font-weight: bold; cursor: pointer;
+    font-size: 0.95rem;
+  }
+  .btn-confirmar { background: #FF8C42; color: #003D5B; }
+  .btn-cancelar { background: #ccc; color: #333; }
+
+  footer {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    color: #003D5B;
+    font-size: 0.85rem;
+    margin-top: 2rem;
+    border-top: 2px solid #FF8C42;
+  }
+  footer strong { color: #003D5B; font-size: 1rem; }
+  .pix-info {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #666;
+  }
+</style>
+</head>
+<body>
+
+<!-- Tela de bloqueio (trial expirado) -->
+<div class="tela-bloqueio" id="telaBloqueio">
+  <h2>⏰ Período de teste encerrado</h2>
+  <p>O período de teste gratuito desta barraca foi encerrado. Para continuar utilizando o cardápio digital, entre em contato:</p>
+  <a href="https://wa.me/5521993109310" target="_blank">💬 Falar no WhatsApp</a>
+  <div class="bloqueio-email">f.gomesnascimento@icloud.com</div>
+</div>
+
+<div class="admin-bar" id="adminBar">🔧 Modo <span>Administrador</span> — ative ou desative produtos abaixo</div>
+
+<header>
+  <div class="header-logo"><span style="font-size:5rem;line-height:1;">🌊</span></div>
+  <div class="header-titulo">IS TECNOLOGIA</div>
+  <div class="header-numero">— 77 —</div>
+  <div class="header-slogan">Onde a praia encontra a tecnologia 🌊💻</div>
+  <div class="header-endereco">Barraca 77 — Ambiente de testes</div>
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('pt')">🇧🇷 PT</button>
+    <button class="lang-btn" onclick="setLang('en')">🇺🇸 EN</button>
+    <button class="lang-btn" onclick="setLang('es')">🇪🇸 ES</button>
+    <button class="lang-btn" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" onclick="setLang('it')">🇮🇹 IT</button>
+    <button class="lang-btn" onclick="setLang('de')">🇩🇪 DE</button>
+    <button class="lang-btn" onclick="setLang('zh')">🇨🇳 ZH</button>
+    <button class="lang-btn" onclick="setLang('ja')">🇯🇵 JA</button>
+  </div>
+</header>
+
+<div class="container" id="cardapio"></div>
+
+<div class="btn-pedido-container" id="btnPedidoContainer">
+  <button class="btn-limpar" id="btnLimpar" onclick="confirmarLimparCarrinho()" title="Limpar carrinho">🗑️</button>
+  <button class="btn-pedido" id="btnPedido" onclick="abrirModalPedido()">🛒 <span id="contadorPedido">0</span> — <span id="textoBtnPedido">Fazer pedido</span></button>
+</div>
+
+<!-- Modal de confirmação após enviar via WhatsApp -->
+<div class="modal-overlay" id="modalConfirmacao">
+  <div class="modal-pedido">
+    <h2 id="modalConfirmacaoTitulo" style="text-align:center;">📱 Pedido enviado?</h2>
+    <p id="modalConfirmacaoTexto" style="text-align:center;color:#555;margin:1rem 0;line-height:1.5;">
+      Confirme apenas se você realmente <strong>enviou a mensagem</strong> pelo WhatsApp.
+    </p>
+    <div class="modal-btns" style="flex-direction:column;gap:8px;">
+      <button class="btn-confirmar" id="btnConfirmarEnvio" onclick="confirmarEnvioPedido()" style="width:100%;">✅ Sim, enviei a mensagem</button>
+      <button class="btn-cancelar" id="btnCancelarEnvio" onclick="cancelarEnvioPedido()" style="width:100%;">❌ Não enviei</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modalPedido">
+  <div class="modal-pedido">
+    <h2 id="modalTitulo">🛎️ Confirmar pedido</h2>
+    <div id="listaPedido"></div>
+    <div class="total-pedido" id="totalPedido">Total: R$ 0,00</div>
+    <label id="labelCadeira">Número da cadeira/mesa:</label>
+    <input type="text" id="inputCadeira" placeholder="Ex: 12" inputmode="numeric">
+    <label id="labelNome">Seu nome (opcional):</label>
+    <input type="text" id="inputNome" placeholder="Ex: João">
+    <div class="modal-btns">
+      <button class="btn-cancelar" id="btnCancelar" onclick="fecharModalPedido()">↩️</button>
+      <button class="btn-confirmar" id="btnConfirmar" onclick="enviarPedido()">📱</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>IS TECNOLOGIA 77</strong><br>
+  Barraca 77 — Ambiente de testes
+  <div class="pix-info">@istecnologia77</div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAX6X6ZX__HxwamgN4wcx8p1jgoQUEWtjE",
+  authDomain: "cardapio-digital-73474.firebaseapp.com",
+  databaseURL: "https://cardapio-digital-73474-default-rtdb.firebaseio.com",
+  projectId: "cardapio-digital-73474",
+  storageBucket: "cardapio-digital-73474.firebasestorage.app",
+  messagingSenderId: "950292544322",
+  appId: "1:950292544322:web:1432db52ebb3add23366db"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+// 🔧 Flag de controle: define se a funcionalidade de pedidos está ativa
+// Quando estiver pronta para produção, basta mudar para true
+const PEDIDOS_ATIVOS = true;
+
+const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'istech77';
+const DB_KEY = 'is-tecnologia-77';
+
+// Lista de produtos fictícios — apenas para testes da Barraca 77 IS TECNOLOGIA
+const produtos = [
+  // DRINKS
+  { categoria: "Drinks", nome: "Caipirinha de Limão", pt: "Cachaça, limão, açúcar e gelo - 400ml", en: "Cachaça, lime, sugar and ice - 400ml", es: "Cachaza, lima, azúcar y hielo - 400ml", fr: "Cachaça, citron vert, sucre et glace - 400ml", it: "Cachaça, lime, zucchero e ghiaccio - 400ml", de: "Cachaça, Limette, Zucker und Eis - 400ml", zh: "卡莎萨酒、青柠、糖和冰 - 400毫升", ja: "カシャーサ、ライム、砂糖、氷 - 400ml", preco: 25.00, emoji: "🍹", img: "", ativo: true },
+  { categoria: "Drinks", nome: "Caipirinha de Morango", pt: "Cachaça, morango fresco, açúcar e gelo - 400ml", en: "Cachaça, fresh strawberry, sugar and ice - 400ml", es: "Cachaza, fresa fresca, azúcar y hielo - 400ml", fr: "Cachaça, fraise fraîche, sucre et glace - 400ml", it: "Cachaça, fragola fresca, zucchero e ghiaccio - 400ml", de: "Cachaça, frische Erdbeere, Zucker und Eis - 400ml", zh: "卡莎萨酒、新鲜草莓、糖和冰 - 400毫升", ja: "カシャーサ、新鮮なイチゴ、砂糖、氷 - 400ml", preco: 30.00, emoji: "🍓", img: "", ativo: true },
+  { categoria: "Drinks", nome: "Mojito Cubano", pt: "Rum branco, hortelã, limão, açúcar e água com gás - 400ml", en: "White rum, mint, lime, sugar and sparkling water - 400ml", es: "Ron blanco, menta, lima, azúcar y agua con gas - 400ml", fr: "Rhum blanc, menthe, citron vert, sucre et eau gazeuse - 400ml", it: "Rum bianco, menta, lime, zucchero e acqua frizzante - 400ml", de: "Weißer Rum, Minze, Limette, Zucker und Sprudelwasser - 400ml", zh: "白朗姆酒、薄荷、青柠、糖和气泡水 - 400毫升", ja: "ホワイトラム、ミント、ライム、砂糖、炭酸水 - 400ml", preco: 35.00, emoji: "🌿", img: "", ativo: true },
+  { categoria: "Drinks", nome: "Piña Colada", pt: "Rum, leite de coco, abacaxi e gelo - 400ml", en: "Rum, coconut milk, pineapple and ice - 400ml", es: "Ron, leche de coco, piña y hielo - 400ml", fr: "Rhum, lait de coco, ananas et glace - 400ml", it: "Rum, latte di cocco, ananas e ghiaccio - 400ml", de: "Rum, Kokosmilch, Ananas und Eis - 400ml", zh: "朗姆酒、椰奶、菠萝和冰 - 400毫升", ja: "ラム、ココナッツミルク、パイナップル、氷 - 400ml", preco: 35.00, emoji: "🍍", img: "", ativo: true },
+  { categoria: "Drinks", nome: "Gin Tônica", pt: "Gin, água tônica, limão e gelo - 350ml", en: "Gin, tonic water, lime and ice - 350ml", es: "Gin, agua tónica, lima y hielo - 350ml", fr: "Gin, eau tonique, citron vert et glace - 350ml", it: "Gin, acqua tonica, lime e ghiaccio - 350ml", de: "Gin, Tonic Water, Limette und Eis - 350ml", zh: "金酒、汤力水、青柠和冰 - 350毫升", ja: "ジン、トニックウォーター、ライム、氷 - 350ml", preco: 38.00, emoji: "🍸", img: "", ativo: true },
+  // CERVEJAS
+  { categoria: "Cervejas", nome: "Heineken Long Neck", pt: "Cerveja Heineken 330ml gelada", en: "Cold Heineken beer 330ml", es: "Cerveza Heineken 330ml fría", fr: "Bière Heineken 330ml fraîche", it: "Birra Heineken 330ml fredda", de: "Kaltes Heineken Bier 330ml", zh: "冰镇喜力啤酒 330毫升", ja: "冷たいハイネケン 330ml", preco: 12.00, emoji: "🍺", img: "", ativo: true },
+  { categoria: "Cervejas", nome: "Brahma Lata", pt: "Cerveja Brahma 350ml", en: "Brahma beer 350ml", es: "Cerveza Brahma 350ml", fr: "Bière Brahma 350ml", it: "Birra Brahma 350ml", de: "Brahma Bier 350ml", zh: "百威啤酒 350毫升", ja: "ブラフマビール 350ml", preco: 8.00, emoji: "🍺", img: "", ativo: true },
+  { categoria: "Cervejas", nome: "Stella Artois", pt: "Cerveja Stella Artois 600ml", en: "Stella Artois beer 600ml", es: "Cerveza Stella Artois 600ml", fr: "Bière Stella Artois 600ml", it: "Birra Stella Artois 600ml", de: "Stella Artois Bier 600ml", zh: "时代啤酒 600毫升", ja: "ステラアルトワ 600ml", preco: 18.00, emoji: "🍺", img: "", ativo: true },
+  { categoria: "Cervejas", nome: "Corona Extra", pt: "Cerveja Corona com limão 355ml", en: "Corona beer with lime 355ml", es: "Cerveza Corona con lima 355ml", fr: "Bière Corona avec citron vert 355ml", it: "Birra Corona con lime 355ml", de: "Corona Bier mit Limette 355ml", zh: "科罗娜啤酒配青柠 355毫升", ja: "ライム入りコロナ 355ml", preco: 15.00, emoji: "🍺", img: "", ativo: true },
+  // SEM ÁLCOOL
+  { categoria: "Sem Álcool", nome: "Água Mineral", pt: "Garrafa 500ml gelada", en: "Cold 500ml bottle", es: "Botella 500ml fría", fr: "Bouteille 500ml fraîche", it: "Bottiglia 500ml fredda", de: "Kalte 500ml Flasche", zh: "冰镇 500毫升瓶装", ja: "冷たい500mlボトル", preco: 5.00, emoji: "💧", img: "", ativo: true },
+  { categoria: "Sem Álcool", nome: "Coca-Cola", pt: "Lata 350ml", en: "Can 350ml", es: "Lata 350ml", fr: "Canette 350ml", it: "Lattina 350ml", de: "Dose 350ml", zh: "易拉罐 350毫升", ja: "缶 350ml", preco: 7.00, emoji: "🥤", img: "", ativo: true },
+  { categoria: "Sem Álcool", nome: "Suco de Laranja", pt: "Natural feito na hora - 400ml", en: "Freshly made natural - 400ml", es: "Natural recién hecho - 400ml", fr: "Naturel fraîchement préparé - 400ml", it: "Naturale appena fatto - 400ml", de: "Frisch gemacht natürlich - 400ml", zh: "现做天然果汁 - 400毫升", ja: "作りたてナチュラル - 400ml", preco: 12.00, emoji: "🍊", img: "", ativo: true },
+  { categoria: "Sem Álcool", nome: "Água de Coco", pt: "Coco verde gelado", en: "Cold green coconut", es: "Coco verde frío", fr: "Noix de coco verte fraîche", it: "Cocco verde freddo", de: "Kalte grüne Kokosnuss", zh: "冰镇青椰子", ja: "冷たい青ココナッツ", preco: 10.00, emoji: "🥥", img: "", ativo: true },
+  { categoria: "Sem Álcool", nome: "Red Bull", pt: "Energético 250ml", en: "Energy drink 250ml", es: "Bebida energética 250ml", fr: "Boisson énergisante 250ml", it: "Bevanda energetica 250ml", de: "Energy Drink 250ml", zh: "能量饮料 250毫升", ja: "エナジードリンク 250ml", preco: 18.00, emoji: "⚡", img: "", ativo: true },
+  // PETISCOS
+  { categoria: "Petiscos", nome: "Batata Frita", pt: "Porção média de batata frita crocante", en: "Medium portion of crispy fries", es: "Porción mediana de papas fritas crujientes", fr: "Portion moyenne de frites croustillantes", it: "Porzione media di patatine fritte croccanti", de: "Mittlere Portion knuspriger Pommes", zh: "中份酥脆薯条", ja: "中サイズのカリカリポテトフライ", preco: 35.00, emoji: "🍟", img: "", ativo: true },
+  { categoria: "Petiscos", nome: "Iscas de Peixe", pt: "Iscas de tilápia empanadas com molho tártaro", en: "Breaded tilapia strips with tartar sauce", es: "Tiras de tilapia empanizadas con salsa tártara", fr: "Lanières de tilapia panées avec sauce tartare", it: "Strisce di tilapia impanate con salsa tartara", de: "Panierte Tilapia-Streifen mit Sauce Tartare", zh: "面包罗非鱼条配塔塔酱", ja: "ティラピアのフライ タルタルソース添え", preco: 55.00, emoji: "🐟", img: "", ativo: true },
+  { categoria: "Petiscos", nome: "Calabresa Acebolada", pt: "Calabresa fatiada com cebola roxa", en: "Sliced pepperoni with red onion", es: "Salchicha calabresa rebanada con cebolla roja", fr: "Saucisse calabrese tranchée avec oignon rouge", it: "Salsiccia calabrese affettata con cipolla rossa", de: "Calabrese-Wurst in Scheiben mit roter Zwiebel", zh: "切片卡拉布雷萨香肠配紫洋葱", ja: "スライスカラブレーゼと赤玉ねぎ", preco: 40.00, emoji: "🌭", img: "", ativo: true },
+  { categoria: "Petiscos", nome: "Camarão Empanado", pt: "Camarão crocante com molho rosé", en: "Crispy shrimp with rosé sauce", es: "Camarón crujiente con salsa rosa", fr: "Crevettes croustillantes avec sauce rosée", it: "Gamberi croccanti con salsa rosa", de: "Knusprige Garnelen mit Rosé-Sauce", zh: "酥脆虾配玫瑰酱", ja: "カリカリエビとロゼソース", preco: 75.00, emoji: "🦐", img: "", ativo: true },
+  { categoria: "Petiscos", nome: "Pastel de Queijo", pt: "Pastel grande recheado com queijo", en: "Large pastry stuffed with cheese", es: "Empanada grande rellena de queso", fr: "Grand chausson farci au fromage", it: "Pastello grande ripieno di formaggio", de: "Großes Teigtaschen mit Käse gefüllt", zh: "大号奶酪馅饼", ja: "大サイズのチーズパステル", preco: 18.00, emoji: "🥟", img: "", ativo: true },
+  { categoria: "Petiscos", nome: "Bolinho de Bacalhau", pt: "6 unidades crocantes", en: "6 crispy units", es: "6 unidades crujientes", fr: "6 unités croustillantes", it: "6 unità croccanti", de: "6 knusprige Stücke", zh: "6个酥脆装", ja: "カリカリ6個", preco: 32.00, emoji: "🐟", img: "", ativo: true },
+  // PORÇÕES
+  { categoria: "Porções", nome: "Filé com Fritas", pt: "Filé mignon grelhado + batata frita - 350g", en: "Grilled filet mignon + french fries - 350g", es: "Filete mignon a la parrilla + papas fritas - 350g", fr: "Filet mignon grillé + frites - 350g", it: "Filetto di manzo grigliato + patatine - 350g", de: "Gegrilltes Filet Mignon + Pommes - 350g", zh: "烤菲力牛排 + 薯条 - 350克", ja: "グリルフィレミニョン + フライドポテト - 350g", preco: 95.00, emoji: "🥩", img: "", ativo: true },
+  { categoria: "Porções", nome: "Frango à Passarinho", pt: "Frango frito temperado com alho - 400g", en: "Garlic-seasoned fried chicken - 400g", es: "Pollo frito sazonado con ajo - 400g", fr: "Poulet frit assaisonné à l'ail - 400g", it: "Pollo fritto condito all'aglio - 400g", de: "Knoblauch-gewürztes gebratenes Hähnchen - 400g", zh: "蒜香炸鸡 - 400克", ja: "ガーリック風味揚げチキン - 400g", preco: 48.00, emoji: "🍗", img: "", ativo: true },
+  { categoria: "Porções", nome: "Tábua de Frios", pt: "Mix de queijos, presunto, salame e azeitonas", en: "Mix of cheeses, ham, salami and olives", es: "Mix de quesos, jamón, salami y aceitunas", fr: "Mélange de fromages, jambon, salami et olives", it: "Mix di formaggi, prosciutto, salame e olive", de: "Mix aus Käse, Schinken, Salami und Oliven", zh: "奶酪、火腿、萨拉米和橄榄拼盘", ja: "チーズ、ハム、サラミ、オリーブの盛り合わせ", preco: 65.00, emoji: "🧀", img: "", ativo: true },
+  // SOBREMESAS
+  { categoria: "Sobremesas", nome: "Açaí 500ml", pt: "Açaí com banana, granola e mel", en: "Açaí with banana, granola and honey", es: "Açaí con plátano, granola y miel", fr: "Açaí avec banane, granola et miel", it: "Açaí con banana, muesli e miele", de: "Açaí mit Banane, Müsli und Honig", zh: "巴西莓配香蕉、燕麦和蜂蜜", ja: "アサイーボウル バナナ、グラノーラ、蜂蜜", preco: 22.00, emoji: "🍇", img: "", ativo: true },
+  { categoria: "Sobremesas", nome: "Sorvete Casquinha", pt: "2 bolas de sorvete na casquinha", en: "2 scoops of ice cream in a cone", es: "2 bolas de helado en cucurucho", fr: "2 boules de glace en cornet", it: "2 palline di gelato nel cono", de: "2 Kugeln Eis in der Waffel", zh: "2球冰淇淋甜筒", ja: "コーンに2スクープのアイスクリーム", preco: 8.00, emoji: "🍦", img: "", ativo: true },
+  { categoria: "Sobremesas", nome: "Pudim de Leite", pt: "Pudim caseiro com calda de caramelo", en: "Homemade pudding with caramel sauce", es: "Pudín casero con salsa de caramelo", fr: "Pudding maison avec sauce caramel", it: "Budino fatto in casa con salsa al caramello", de: "Hausgemachter Pudding mit Karamellsauce", zh: "自制布丁配焦糖酱", ja: "自家製プリン キャラメルソース添え", preco: 15.00, emoji: "🍮", img: "", ativo: true },
+];
+
+let ordemCategorias = ["Drinks", "Cervejas", "Sem Álcool", "Petiscos", "Porções", "Sobremesas"];
+let langAtual = 'pt';
+let pedido = {}; // { idx: quantidade }
+
+const labels = {
+  pt: {
+    esgotado: "Esgotado",
+    pedido: "Fazer pedido",
+    total: "Total",
+    cadeira: "Número da cadeira/mesa",
+    nome: "Seu nome (opcional)",
+    confirmar: "Enviar via WhatsApp",
+    cancelar: "Continuar comprando",
+    confirmarPedido: "Confirmar pedido",
+    cada: "cada",
+    placeholderCadeira: "Ex: 12",
+    placeholderNome: "Ex: João",
+    informeCadeira: "Informe o número da cadeira/mesa",
+    confirmarLimpar: "Tem certeza que deseja limpar o carrinho?",
+    itemRemovido: "item será removido",
+    itensRemovidos: "itens serão removidos",
+    confirmarRemoverItem: "Remover \"{produto,
+    pedidoEnviadoTitulo: "📱 Pedido enviado?",
+    pedidoEnviadoTexto: "Confirme apenas se você realmente <strong>enviou a mensagem</strong> pelo WhatsApp.",
+    simEnviei: "✅ Sim, enviei a mensagem",
+    naoEnviei: "❌ Não enviei"}\" do carrinho?",
+    limparTitle: "Limpar carrinho",
+    removerTitle: "Remover do carrinho"
+  },
+  en: {
+    esgotado: "Sold out",
+    pedido: "Place order",
+    total: "Total",
+    cadeira: "Chair/table number",
+    nome: "Your name (optional)",
+    confirmar: "Send via WhatsApp",
+    cancelar: "Continue shopping",
+    confirmarPedido: "Confirm order",
+    cada: "each",
+    placeholderCadeira: "Ex: 12",
+    placeholderNome: "Ex: John",
+    informeCadeira: "Please enter the chair/table number",
+    confirmarLimpar: "Are you sure you want to clear the cart?",
+    itemRemovido: "item will be removed",
+    itensRemovidos: "items will be removed",
+    confirmarRemoverItem: "Remove \"{produto,
+    pedidoEnviadoTitulo: "📱 Order sent?",
+    pedidoEnviadoTexto: "Please confirm only if you actually <strong>sent the message</strong> via WhatsApp.",
+    simEnviei: "✅ Yes, I sent the message",
+    naoEnviei: "❌ I didn't send it"}\" from cart?",
+    limparTitle: "Clear cart",
+    removerTitle: "Remove from cart"
+  },
+  es: {
+    esgotado: "Agotado",
+    pedido: "Hacer pedido",
+    total: "Total",
+    cadeira: "Número silla/mesa",
+    nome: "Tu nombre (opcional)",
+    confirmar: "Enviar por WhatsApp",
+    cancelar: "Seguir comprando",
+    confirmarPedido: "Confirmar pedido",
+    cada: "c/u",
+    placeholderCadeira: "Ej: 12",
+    placeholderNome: "Ej: Juan",
+    informeCadeira: "Indica el número de silla/mesa",
+    confirmarLimpar: "¿Seguro que deseas vaciar el carrito?",
+    itemRemovido: "artículo será eliminado",
+    itensRemovidos: "artículos serán eliminados",
+    confirmarRemoverItem: "¿Eliminar \"{produto,
+    pedidoEnviadoTitulo: "📱 ¿Pedido enviado?",
+    pedidoEnviadoTexto: "Confirma solo si realmente <strong>enviaste el mensaje</strong> por WhatsApp.",
+    simEnviei: "✅ Sí, envié el mensaje",
+    naoEnviei: "❌ No lo envié"}\" del carrito?",
+    limparTitle: "Vaciar carrito",
+    removerTitle: "Eliminar del carrito"
+  },
+  fr: {
+    esgotado: "Épuisé",
+    pedido: "Commander",
+    total: "Total",
+    cadeira: "Numéro chaise/table",
+    nome: "Votre nom (optionnel)",
+    confirmar: "Envoyer via WhatsApp",
+    cancelar: "Continuer mes achats",
+    confirmarPedido: "Confirmer la commande",
+    cada: "chacun",
+    placeholderCadeira: "Ex: 12",
+    placeholderNome: "Ex: Jean",
+    informeCadeira: "Veuillez indiquer le numéro de chaise/table",
+    confirmarLimpar: "Êtes-vous sûr de vouloir vider le panier ?",
+    itemRemovido: "article sera supprimé",
+    itensRemovidos: "articles seront supprimés",
+    confirmarRemoverItem: "Retirer \"{produto,
+    pedidoEnviadoTitulo: "📱 Commande envoyée ?",
+    pedidoEnviadoTexto: "Confirmez uniquement si vous avez réellement <strong>envoyé le message</strong> via WhatsApp.",
+    simEnviei: "✅ Oui, j'ai envoyé le message",
+    naoEnviei: "❌ Je ne l'ai pas envoyé"}\" du panier ?",
+    limparTitle: "Vider le panier",
+    removerTitle: "Retirer du panier"
+  },
+  it: {
+    esgotado: "Esaurito",
+    pedido: "Ordinare",
+    total: "Totale",
+    cadeira: "Numero sedia/tavolo",
+    nome: "Il tuo nome (opzionale)",
+    confirmar: "Invia tramite WhatsApp",
+    cancelar: "Continua lo shopping",
+    confirmarPedido: "Conferma ordine",
+    cada: "cad.",
+    placeholderCadeira: "Es: 12",
+    placeholderNome: "Es: Marco",
+    informeCadeira: "Inserisci il numero sedia/tavolo",
+    confirmarLimpar: "Vuoi davvero svuotare il carrello?",
+    itemRemovido: "articolo sarà rimosso",
+    itensRemovidos: "articoli saranno rimossi",
+    confirmarRemoverItem: "Rimuovere \"{produto,
+    pedidoEnviadoTitulo: "📱 Ordine inviato?",
+    pedidoEnviadoTexto: "Conferma solo se hai effettivamente <strong>inviato il messaggio</strong> tramite WhatsApp.",
+    simEnviei: "✅ Sì, ho inviato il messaggio",
+    naoEnviei: "❌ Non l\\u0027ho inviato"}\" dal carrello?",
+    limparTitle: "Svuota carrello",
+    removerTitle: "Rimuovi dal carrello"
+  },
+  de: {
+    esgotado: "Ausverkauft",
+    pedido: "Bestellen",
+    total: "Gesamt",
+    cadeira: "Stuhl/Tisch Nummer",
+    nome: "Ihr Name (optional)",
+    confirmar: "Per WhatsApp senden",
+    cancelar: "Weiter einkaufen",
+    confirmarPedido: "Bestellung bestätigen",
+    cada: "je",
+    placeholderCadeira: "Z.B.: 12",
+    placeholderNome: "Z.B.: Hans",
+    informeCadeira: "Bitte geben Sie die Stuhl-/Tischnummer ein",
+    confirmarLimpar: "Möchten Sie den Warenkorb wirklich leeren?",
+    itemRemovido: "Artikel wird entfernt",
+    itensRemovidos: "Artikel werden entfernt",
+    confirmarRemoverItem: "\"{produto,
+    pedidoEnviadoTitulo: "📱 Bestellung gesendet?",
+    pedidoEnviadoTexto: "Bitte bestätigen Sie nur, wenn Sie die <strong>Nachricht tatsächlich</strong> per WhatsApp gesendet haben.",
+    simEnviei: "✅ Ja, ich habe die Nachricht gesendet",
+    naoEnviei: "❌ Ich habe sie nicht gesendet"}\" aus dem Warenkorb entfernen?",
+    limparTitle: "Warenkorb leeren",
+    removerTitle: "Aus Warenkorb entfernen"
+  },
+  zh: {
+    esgotado: "售罄",
+    pedido: "下单",
+    total: "总计",
+    cadeira: "椅子/桌子号码",
+    nome: "您的姓名（可选）",
+    confirmar: "通过 WhatsApp 发送",
+    cancelar: "继续购物",
+    confirmarPedido: "确认订单",
+    cada: "每份",
+    placeholderCadeira: "例如：12",
+    placeholderNome: "例如：王",
+    informeCadeira: "请输入椅子/桌子号码",
+    confirmarLimpar: "确定要清空购物车吗？",
+    itemRemovido: "件商品将被移除",
+    itensRemovidos: "件商品将被移除",
+    confirmarRemoverItem: "从购物车移除\"{produto,
+    pedidoEnviadoTitulo: "📱 订单已发送？",
+    pedidoEnviadoTexto: "只有在您确实<strong>通过 WhatsApp 发送消息</strong>后才确认。",
+    simEnviei: "✅ 是的，我已发送消息",
+    naoEnviei: "❌ 我没有发送"}\"？",
+    limparTitle: "清空购物车",
+    removerTitle: "从购物车移除"
+  },
+  ja: {
+    esgotado: "売り切れ",
+    pedido: "注文する",
+    total: "合計",
+    cadeira: "椅子/テーブル番号",
+    nome: "お名前（任意）",
+    confirmar: "WhatsApp で送信",
+    cancelar: "買い物を続ける",
+    confirmarPedido: "注文を確認",
+    cada: "個",
+    placeholderCadeira: "例：12",
+    placeholderNome: "例：太郎",
+    informeCadeira: "椅子/テーブル番号を入力してください",
+    confirmarLimpar: "カートを空にしてもよろしいですか？",
+    itemRemovido: "個の商品が削除されます",
+    itensRemovidos: "個の商品が削除されます",
+    confirmarRemoverItem: "「{produto,
+    pedidoEnviadoTitulo: "📱 注文を送信しましたか？",
+    pedidoEnviadoTexto: "実際に WhatsApp で<strong>メッセージを送信した</strong>場合のみ確認してください。",
+    simEnviei: "✅ はい、メッセージを送信しました",
+    naoEnviei: "❌ 送信しませんでした"}」をカートから削除しますか？",
+    limparTitle: "カートを空にする",
+    removerTitle: "カートから削除"
+  },
+};
+
+function setLang(l) {
+  langAtual = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  aplicarTraducoesUI();
+  render();
+}
+
+// Aplica traduções nos elementos estáticos da UI (modal, botões fixos)
+function aplicarTraducoesUI() {
+  const t = labels[langAtual];
+  // Botão flutuante
+  const textoBtn = document.getElementById('textoBtnPedido');
+  if (textoBtn) textoBtn.textContent = t.pedido;
+  const btnLimpar = document.getElementById('btnLimpar');
+  if (btnLimpar) btnLimpar.title = t.limparTitle;
+  // Modal
+  const modalTitulo = document.getElementById('modalTitulo');
+  if (modalTitulo) modalTitulo.innerHTML = `🛎️ ${t.confirmarPedido}`;
+  const labelCadeira = document.getElementById('labelCadeira');
+  if (labelCadeira) labelCadeira.textContent = t.cadeira + ':';
+  const labelNome = document.getElementById('labelNome');
+  if (labelNome) labelNome.textContent = t.nome + ':';
+  const inputCadeira = document.getElementById('inputCadeira');
+  if (inputCadeira) inputCadeira.placeholder = t.placeholderCadeira;
+  const inputNome = document.getElementById('inputNome');
+  if (inputNome) inputNome.placeholder = t.placeholderNome;
+  const btnCancelar = document.getElementById('btnCancelar');
+  if (btnCancelar) btnCancelar.innerHTML = `↩️ ${t.cancelar}`;
+  const btnConfirmar = document.getElementById('btnConfirmar');
+  if (btnConfirmar) btnConfirmar.innerHTML = `📱 ${t.confirmar}`;
+  // Modal de confirmação
+  const confirmacaoTitulo = document.getElementById('modalConfirmacaoTitulo');
+  if (confirmacaoTitulo) confirmacaoTitulo.textContent = t.pedidoEnviadoTitulo;
+  const confirmacaoTexto = document.getElementById('modalConfirmacaoTexto');
+  if (confirmacaoTexto) confirmacaoTexto.innerHTML = t.pedidoEnviadoTexto;
+  const btnConfirmarEnvio = document.getElementById('btnConfirmarEnvio');
+  if (btnConfirmarEnvio) btnConfirmarEnvio.textContent = t.simEnviei;
+  const btnCancelarEnvio = document.getElementById('btnCancelarEnvio');
+  if (btnCancelarEnvio) btnCancelarEnvio.textContent = t.naoEnviei;
+  // Se modal estiver aberto, re-renderiza os itens (pra atualizar "cada")
+  const modal = document.getElementById('modalPedido');
+  if (modal && modal.classList.contains('show')) renderizarItensModal();
+}
+
+function toggleProduto(idx) {
+  produtos[idx].ativo = !produtos[idx].ativo;
+  const estados = produtos.map(p => p.ativo);
+  set(ref(db, `${DB_KEY}/produtos`), estados);
+  render();
+}
+
+function adicionarPedido(idx) {
+  pedido[idx] = (pedido[idx] || 0) + 1;
+  atualizarBtnPedido();
+  render();
+}
+
+function removerPedido(idx) {
+  if (pedido[idx]) {
+    pedido[idx]--;
+    if (pedido[idx] <= 0) delete pedido[idx];
+  }
+  atualizarBtnPedido();
+  render();
+}
+
+function atualizarBtnPedido() {
+  if (!PEDIDOS_ATIVOS) return;
+  const total = Object.values(pedido).reduce((s, q) => s + q, 0);
+  const container = document.getElementById('btnPedidoContainer');
+  document.getElementById('contadorPedido').textContent = total;
+  container.classList.toggle('show', total > 0);
+}
+
+function abrirModalPedido() {
+  renderizarItensModal();
+  document.getElementById('modalPedido').classList.add('show');
+}
+
+function renderizarItensModal() {
+  const lista = document.getElementById('listaPedido');
+  const t = labels[langAtual];
+  const total = Object.values(pedido).reduce((s, q) => s + q, 0);
+
+  // Se carrinho vazio, fecha o modal automaticamente
+  if (total === 0) {
+    fecharModalPedido();
+    atualizarBtnPedido();
+    render();
+    return;
+  }
+
+  let html = '';
+  let totalGeral = 0;
+  Object.keys(pedido).forEach(idx => {
+    const p = produtos[idx];
+    const qtd = pedido[idx];
+    const sub = p.preco * qtd;
+    totalGeral += sub;
+    html += `
+      <div class="item-pedido-completo">
+        <div class="item-info">
+          <div class="item-nome">${p.nome}</div>
+          <div class="item-preco-unit">R$ ${p.preco.toFixed(2).replace('.', ',')} ${t.cada}</div>
+        </div>
+        <div class="item-controles">
+          <button class="qtd-btn-modal" onclick="removerPedidoModal(${idx})">−</button>
+          <span class="qtd-display-modal">${qtd}</span>
+          <button class="qtd-btn-modal" onclick="adicionarPedidoModal(${idx})">+</button>
+          <button class="btn-excluir-item" onclick="excluirItemModal(${idx})" title="${t.removerTitle}">🗑️</button>
+        </div>
+        <div class="item-subtotal">R$ ${sub.toFixed(2).replace('.', ',')}</div>
+      </div>
+    `;
+  });
+  lista.innerHTML = html;
+  document.getElementById('totalPedido').textContent = `${t.total}: R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+}
+
+// Funções específicas do modal — atualizam tela em tempo real
+function adicionarPedidoModal(idx) {
+  pedido[idx] = (pedido[idx] || 0) + 1;
+  atualizarBtnPedido();
+  renderizarItensModal();
+  render();
+}
+
+function removerPedidoModal(idx) {
+  if (pedido[idx]) {
+    pedido[idx]--;
+    if (pedido[idx] <= 0) delete pedido[idx];
+  }
+  atualizarBtnPedido();
+  renderizarItensModal();
+  render();
+}
+
+function excluirItemModal(idx) {
+  const nomeProduto = produtos[idx].nome;
+  const t = labels[langAtual];
+  const msg = t.confirmarRemoverItem.replace('{produto}', nomeProduto);
+  if (confirm(msg)) {
+    delete pedido[idx];
+    atualizarBtnPedido();
+    renderizarItensModal();
+    render();
+  }
+}
+
+function fecharModalPedido() {
+  document.getElementById('modalPedido').classList.remove('show');
+}
+
+function confirmarLimparCarrinho() {
+  const total = Object.values(pedido).reduce((s, q) => s + q, 0);
+  if (total === 0) return;
+  const t = labels[langAtual];
+  const sufixo = total === 1 ? t.itemRemovido : t.itensRemovidos;
+  if (confirm(`${t.confirmarLimpar}\n\n${total} ${sufixo}.`)) {
+    limparCarrinho();
+  }
+}
+
+function limparCarrinho() {
+  pedido = {};
+  atualizarBtnPedido();
+  fecharModalPedido();
+  render();
+}
+
+// 📱 Número do WhatsApp do barraqueiro (formato internacional, sem + ou espaços)
+const WHATSAPP_NUMBER = '5521993109310';
+
+// Variável temporária para guardar dados do pedido enquanto cliente confirma envio
+let pedidoPendente = null;
+
+function enviarPedido() {
+  const cadeira = document.getElementById('inputCadeira').value.trim();
+  const nome = document.getElementById('inputNome').value.trim() || 'Cliente';
+  if (!cadeira) { alert(labels[langAtual].informeCadeira); return; }
+
+  const itens = Object.keys(pedido).map(idx => ({
+    nome: produtos[idx].nome,
+    quantidade: pedido[idx],
+    preco: produtos[idx].preco,
+    subtotal: produtos[idx].preco * pedido[idx]
+  }));
+  const total = itens.reduce((s, i) => s + i.subtotal, 0);
+
+  // Guarda pedido em memória — só salva no Firebase após cliente confirmar envio
+  pedidoPendente = { cadeira, nome, itens, total };
+
+  // Monta mensagem formatada para WhatsApp
+  const horario = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+  let mensagem = `🛎️ *NOVO PEDIDO* 🛎️%0A`;
+  mensagem += `━━━━━━━━━━━━━━━%0A`;
+  mensagem += `🪑 *Cadeira/Mesa:* ${cadeira}%0A`;
+  mensagem += `👤 *Cliente:* ${nome}%0A`;
+  mensagem += `🕐 *Horário:* ${horario}%0A`;
+  mensagem += `━━━━━━━━━━━━━━━%0A`;
+  mensagem += `📋 *ITENS:*%0A`;
+
+  itens.forEach(item => {
+    const subtotalFmt = item.subtotal.toFixed(2).replace('.', ',');
+    mensagem += `▪️ ${item.quantidade}x ${item.nome} — R$ ${subtotalFmt}%0A`;
+  });
+
+  mensagem += `━━━━━━━━━━━━━━━%0A`;
+  mensagem += `💰 *TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*%0A`;
+  mensagem += `━━━━━━━━━━━━━━━%0A`;
+  mensagem += `_Pedido enviado via cardápio digital_`;
+
+  // Abre WhatsApp com a mensagem pronta
+  const urlWhatsapp = `https://wa.me/${WHATSAPP_NUMBER}?text=${mensagem}`;
+  window.open(urlWhatsapp, '_blank');
+
+  // Mostra modal de confirmação (cliente confirma se enviou ou não)
+  fecharModalPedido();
+  document.getElementById('modalConfirmacao').classList.add('show');
+}
+
+function confirmarEnvioPedido() {
+  if (!pedidoPendente) return;
+
+  // Agora sim salva no Firebase — só após cliente confirmar que enviou
+  push(ref(db, `${DB_KEY}/pedidos`), {
+    ...pedidoPendente,
+    timestamp: Date.now(),
+    status: 'novo'
+  });
+
+  // Limpa estado
+  pedidoPendente = null;
+  pedido = {};
+  document.getElementById('modalConfirmacao').classList.remove('show');
+  atualizarBtnPedido();
+  render();
+}
+
+function cancelarEnvioPedido() {
+  // Cliente não enviou pelo WhatsApp — descarta o pedido pendente
+  // (NÃO salva no Firebase, mas mantém o carrinho do cliente intacto pra ele tentar de novo)
+  pedidoPendente = null;
+  document.getElementById('modalConfirmacao').classList.remove('show');
+  // Reabre o modal de pedido para o cliente revisar/tentar de novo
+  document.getElementById('modalPedido').classList.add('show');
+}
+
+function render() {
+  const el = document.getElementById('cardapio');
+  el.innerHTML = '';
+
+  if (isAdmin) document.getElementById('adminBar').classList.add('show');
+
+  ordemCategorias.forEach((categoria, ci) => {
+    const itens = produtos.filter(p => p.categoria === categoria);
+    if (itens.length === 0) return;
+
+    const section = document.createElement('div');
+    section.innerHTML = `<h2 class="categoria-titulo">${categoria}</h2>`;
+
+    itens.forEach((p, i) => {
+      const idx = produtos.indexOf(p);
+      const card = document.createElement('div');
+      card.className = `produto-card ${!p.ativo ? 'inativo' : ''}`;
+      card.style.animationDelay = `${(ci * 3 + i) * 0.03}s`;
+
+      const imgEl = p.img
+        ? `<img class="produto-img" src="${p.img}" alt="${p.nome}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="produto-img-placeholder" style="display:none">${p.emoji}</div>`
+        : `<div class="produto-img-placeholder">${p.emoji}</div>`;
+
+      const precoFormatado = `R$ ${p.preco.toFixed(2).replace('.', ',')}`;
+      const qtdAtual = pedido[idx] || 0;
+
+      let acaoHTML = '';
+      if (isAdmin) {
+        acaoHTML = `<label class="toggle"><input type="checkbox" ${p.ativo ? 'checked' : ''} onchange="toggleProduto(${idx})"><span class="toggle-slider"></span></label>`;
+      } else if (p.ativo && PEDIDOS_ATIVOS) {
+        acaoHTML = qtdAtual > 0
+          ? `<div style="display:flex;align-items:center;gap:6px;"><button class="qtd-btn" onclick="removerPedido(${idx})">−</button><span class="qtd-display">${qtdAtual}</span><button class="qtd-btn" onclick="adicionarPedido(${idx})">+</button></div>`
+          : `<button class="qtd-btn" onclick="adicionarPedido(${idx})" style="width:32px;height:32px;font-size:1.2rem;">+</button>`;
+      }
+
+      const compHTML = langAtual === 'pt'
+        ? `<div class="produto-comp">${p.pt}</div>`
+        : `<div class="produto-comp produto-comp-principal">${p[langAtual]}</div><div class="produto-comp produto-comp-pt">${p.pt}</div>`;
+
+      card.innerHTML = `
+        ${imgEl}
+        <div class="produto-info">
+          <div class="produto-nome">${p.nome}</div>
+          ${compHTML}
+          ${!p.ativo ? `<span class="esgotado">${labels[langAtual].esgotado}</span>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+          <div class="produto-preco">${precoFormatado}</div>
+          ${acaoHTML}
+        </div>
+      `;
+      section.appendChild(card);
+    });
+
+    el.appendChild(section);
+  });
+}
+
+// Firebase — carregar dados
+onValue(ref(db, DB_KEY), (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    if (data.produtos) {
+      data.produtos.forEach((ativo, i) => { if (produtos[i]) produtos[i].ativo = ativo; });
+    }
+    if (data.dados) {
+      Object.keys(data.dados).forEach(key => {
+        const idx = parseInt(key);
+        const d = data.dados[key];
+        if (!d) return;
+        if (produtos[idx]) {
+          Object.keys(d).forEach(k => { produtos[idx][k] = d[k]; });
+        } else {
+          produtos[idx] = { ...d, ativo: d.ativo !== undefined ? d.ativo : true };
+        }
+      });
+    }
+    if (data.ordem) ordemCategorias = data.ordem;
+  }
+  render();
+});
+
+// Verificar bloqueio do trial
+onValue(ref(db, 'clientes'), (snapshot) => {
+  const clientes = snapshot.val();
+  if (clientes) {
+    const cliente = Object.values(clientes).find(c => c.link && c.link.includes('is-tecnologia'));
+    if (cliente && cliente.bloqueado) {
+      document.getElementById('telaBloqueio').classList.add('show');
+    } else {
+      document.getElementById('telaBloqueio').classList.remove('show');
+    }
+  }
+});
+
+window.setLang = setLang;
+window.toggleProduto = toggleProduto;
+window.adicionarPedido = adicionarPedido;
+window.removerPedido = removerPedido;
+window.abrirModalPedido = abrirModalPedido;
+window.fecharModalPedido = fecharModalPedido;
+window.enviarPedido = enviarPedido;
+window.confirmarLimparCarrinho = confirmarLimparCarrinho;
+window.adicionarPedidoModal = adicionarPedidoModal;
+window.removerPedidoModal = removerPedidoModal;
+window.excluirItemModal = excluirItemModal;
+window.confirmarEnvioPedido = confirmarEnvioPedido;
+window.cancelarEnvioPedido = cancelarEnvioPedido;
+
+// Aplica traduções iniciais (idioma padrão = pt, mas garante consistência)
+aplicarTraducoesUI();
+</script>
+
+</body>
+</html>
