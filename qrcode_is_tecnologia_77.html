@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>QR Code — IS Tecnologia 77</title>
+<style>
+  @media print {
+    body { background: white !important; }
+    .card { box-shadow: none !important; border: 2px solid #003D5B !important; }
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; margin: 0;
+    background: linear-gradient(180deg, #F0F8FF 0%, #FFFFFF 100%);
+  }
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(42,27,92,0.15);
+    max-width: 320px;
+    border: 3px solid #FF8C42;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -10px; right: -10px;
+    width: 80px; height: 80px;
+    background-image: radial-gradient(circle, #003D5B 2px, transparent 2px);
+    background-size: 10px 10px;
+    opacity: 0.3;
+  }
+  .logo-sol {
+    width: 130px; height: 130px;
+    margin: 0 auto 0.5rem;
+    display: flex; align-items: center; justify-content: center;
+    filter: drop-shadow(0 0 12px rgba(255,215,0,0.4));
+  }
+  .logo-sol img { width: 100%; height: 100%; object-fit: contain; }
+  h1 {
+    color: #003D5B;
+    font-size: 1.3rem;
+    margin: 0.3rem 0 0.1rem;
+    letter-spacing: 0.05em;
+    font-weight: 900;
+  }
+  .numero {
+    color: #0077A6;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 0.6rem;
+  }
+  .frases { margin: 0.8rem 0 1rem; }
+  .frase { font-size: 0.8rem; margin: 4px 0; }
+  .frase-pt { color: #003D5B; font-weight: 600; }
+  .frase-en, .frase-es { color: #888; }
+  img.qr {
+    width: 220px; height: 220px;
+    border: 2px solid #FF8C42;
+    border-radius: 8px;
+    padding: 4px;
+    background: white;
+  }
+  .link {
+    font-size: 0.7rem;
+    color: #0077A6;
+    margin-top: 0.75rem;
+    word-break: break-all;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-sol"><span style="font-size:5rem;line-height:1;">🌊</span></div>
+    <h1>IS TECNOLOGIA</h1>
+    <div class="numero">— 77 —</div>
+    <img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://is-tecnologia-77.vercel.app&color=003D5B&bgcolor=ffffff&qzone=2&format=png" alt="QR Code IS Tecnologia 77">
+    <div class="frases">
+      <p class="frase frase-pt">📱 Escaneie para ver o cardápio digital</p>
+      <p class="frase frase-en">📱 Scan to see the digital menu</p>
+      <p class="frase frase-es">📱 Escanea para ver el menú digital</p>
+    </div>
+  </div>
+</body>
+</html>
