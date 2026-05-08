@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>📋 Painel de Clientes — 77 IS Tecnologia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(180deg, #F0F8FF 0%, #E3F2FD 100%);
+    margin: 0; padding: 1rem;
+    color: #003D5B;
+    min-height: 100vh;
+  }
+
+  /* Tela de bloqueio */
+  .bloqueio {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: #003D5B;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999;
+    flex-direction: column;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+  }
+  .bloqueio h1 { font-size: 1.6rem; margin-bottom: 1rem; }
+  .bloqueio p { font-size: 0.95rem; opacity: 0.9; line-height: 1.5; max-width: 400px; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #003D5B 0%, #0077A6 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,61,91,0.2);
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  header h1 {
+    margin: 0 0 0.3rem;
+    font-size: 1.5rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  header .subtitulo {
+    opacity: 0.9;
+    font-size: 0.88rem;
+  }
+  header .estatisticas {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 1rem;
+  }
+  header .stat {
+    background: rgba(255,255,255,0.15);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  header .stat .num {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #FF8C42;
+  }
+  header .stat .label {
+    font-size: 0.72rem;
+    opacity: 0.9;
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Container principal */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* Botão "Novo cliente" */
+  .btn-novo {
+    background: #FF8C42;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(255,140,66,0.3);
+  }
+  .btn-novo:hover { background: #FFA040; }
+
+  /* Cards de cliente */
+  .clientes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+  }
+  .cliente-card {
+    background: white;
+    border-radius: 14px;
+    padding: 1rem;
+    box-shadow: 0 2px 12px rgba(0,61,91,0.1);
+    border-left: 5px solid #003D5B;
+    position: relative;
+  }
+  .cliente-card.urgente { border-left-color: #C0392B; background: #FFF5F5; }
+  .cliente-card.alerta { border-left-color: #FF8C42; background: #FFF9F0; }
+  .cliente-card.ok { border-left-color: #4CAF50; }
+  .cliente-card.bloqueado { border-left-color: #999; opacity: 0.85; background: #F5F5F5; }
+  .cliente-card.semtrial { border-left-color: #2196F3; }
+
+  .cliente-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+  }
+  .cliente-nome {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #003D5B;
+  }
+  .cliente-status {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .status-trial-ativo { background: #E8F5E9; color: #2E7D32; }
+  .status-trial-alerta { background: #FFF3E0; color: #E65100; }
+  .status-trial-urgente { background: #FFEBEE; color: #C62828; animation: pulsar 1.5s infinite; }
+  .status-trial-vencido { background: #B71C1C; color: white; }
+  .status-bloqueado { background: #424242; color: white; }
+  .status-semtrial { background: #E3F2FD; color: #1565C0; }
+  @keyframes pulsar { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+  .cliente-info {
+    color: #666;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    margin-bottom: 0.6rem;
+  }
+  .cliente-info strong { color: #003D5B; }
+
+  .trial-progresso {
+    margin-top: 0.8rem;
+  }
+  .trial-progresso-bar {
+    background: #E0E0E0;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .trial-progresso-fill {
+    height: 100%;
+    transition: width 0.4s, background 0.4s;
+  }
+  .trial-progresso-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    color: #666;
+  }
+  .trial-progresso-info strong {
+    color: #003D5B;
+  }
+
+  .cliente-acoes {
+    display: flex;
+    gap: 6px;
+    margin-top: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .cliente-acoes button {
+    flex: 1;
+    min-width: 80px;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  .btn-editar { background: #003D5B; color: white; }
+  .btn-bloquear { background: #C0392B; color: white; }
+  .btn-liberar { background: #4CAF50; color: white; }
+  .btn-trial-toggle { background: #FF8C42; color: white; }
+  .btn-link { background: #2196F3; color: white; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-pedido {
+    background: white;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+  .modal-pedido h2 {
+    margin: 0 0 1rem;
+    color: #003D5B;
+    border-bottom: 3px solid #FF8C42;
+    padding-bottom: 0.5rem;
+  }
+  .modal-pedido label {
+    display: block;
+    margin-top: 0.7rem;
+    font-weight: 700;
+    color: #003D5B;
+    font-size: 0.85rem;
+  }
+  .modal-pedido input,
+  .modal-pedido textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #003D5B;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    margin-top: 4px;
+    font-family: inherit;
+  }
+  .modal-pedido textarea { resize: vertical; min-height: 60px; }
+  .modal-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0.8rem;
+    background: #F5FAFE;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  .modal-checkbox input { width: auto; margin: 0; }
+  .modal-checkbox label { margin: 0; font-size: 0.9rem; cursor: pointer; }
+  .modal-btns {
+    display: flex;
+    gap: 8px;
+    margin-top: 1.2rem;
+  }
+  .modal-btns button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+  .btn-cancelar { background: #ccc; color: #333; }
+  .btn-confirmar { background: #FF8C42; color: white; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 3rem;
+    color: #999;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,61,91,0.05);
+  }
+
+  /* Loading */
+  .carregando {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+  }
+</style>
+</head>
+<body>
+
+<!-- 🔒 Tela de bloqueio (acesso master) -->
+<div class="bloqueio" id="telaBloqueio">
+  <h1>🔒 Acesso restrito</h1>
+  <p>Este painel é restrito ao administrador.<br>
+  Acesse pelo link com a senha master correta.</p>
+</div>
+
+<!-- Container principal -->
+<div class="container" id="container" style="display:none;">
+
+  <header>
+    <h1>📋 Painel de Clientes — 77 IS Tecnologia</h1>
+    <div class="subtitulo">Gestão centralizada dos cardápios digitais e trials de 30 dias</div>
+    <div class="estatisticas">
+      <div class="stat"><div class="num" id="statTotal">0</div><div class="label">CLIENTES</div></div>
+      <div class="stat"><div class="num" id="statTrialAtivo">0</div><div class="label">EM TRIAL</div></div>
+      <div class="stat"><div class="num" id="statBloqueado">0</div><div class="label">BLOQUEADOS</div></div>
+      <div class="stat"><div class="num" id="statAlerta">0</div><div class="label">VENCEM EM 7d</div></div>
+    </div>
+  </header>
+
+  <button class="btn-novo" onclick="abrirModalCliente()">➕ Cadastrar novo cliente</button>
+
+  <div class="clientes-grid" id="clientesGrid">
+    <div class="carregando">⏳ Carregando clientes...</div>
+  </div>
+
+</div>
+
+<!-- Modal: Cadastrar/Editar cliente -->
+<div class="modal-overlay" id="modalCliente">
+  <div class="modal-pedido">
+    <h2 id="modalTitulo">➕ Cadastrar novo cliente</h2>
+
+    <label>🏪 Nome da barraca *</label>
+    <input type="text" id="inpNome" placeholder="Ex: Vivia Tropical 98">
+
+    <label>📍 Localização</label>
+    <input type="text" id="inpLocalizacao" placeholder="Ex: Posto 3, Copacabana">
+
+    <label>🔗 Link do cardápio *</label>
+    <input type="text" id="inpLink" placeholder="https://cardapio-x.vercel.app">
+
+    <label>📱 WhatsApp do cliente (com 55+DDD, só dígitos)</label>
+    <input type="text" id="inpWhatsapp" placeholder="5521999999999">
+
+    <label>📅 Data de início do trial (apenas se trial ativo)</label>
+    <input type="date" id="inpDataInicio">
+
+    <label>📝 Observações (opcional)</label>
+    <textarea id="inpObs" placeholder="Notas internas sobre o cliente..."></textarea>
+
+    <div class="modal-checkbox">
+      <input type="checkbox" id="inpTrialAtivo" checked>
+      <label for="inpTrialAtivo">📅 <strong>Ativar trial de 30 dias</strong> (desmarque se cliente já é pago/livre)</label>
+    </div>
+
+    <p id="msgErro" style="color:#C0392B; font-size:0.85rem; margin-top:0.6rem; display:none;"></p>
+
+    <div class="modal-btns">
+      <button class="btn-cancelar" onclick="fecharModalCliente()">Cancelar</button>
+      <button class="btn-confirmar" onclick="salvarCliente()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAX6X6ZX__HxwamgN4wcx8p1jgoQUEWtjE",
+  authDomain: "cardapio-digital-73474.firebaseapp.com",
+  databaseURL: "https://cardapio-digital-73474-default-rtdb.firebaseio.com",
+  projectId: "cardapio-digital-73474",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// 🔒 Bloqueio de acesso master
+const SENHAS_MASTER = ['master77istech', 'felipe2026'];
+let acessoLiberado = false;
+
+(function checarAcesso() {
+  const params = new URLSearchParams(window.location.search);
+  const senha = params.get('master');
+  if (senha && SENHAS_MASTER.includes(senha)) {
+    acessoLiberado = true;
+    document.getElementById('telaBloqueio').style.display = 'none';
+    document.getElementById('container').style.display = 'block';
+    iniciar();
+  }
+})();
+
+let clientes = {};
+let clienteEditando = null; // ID do cliente sendo editado, ou null se for novo
+
+// Configurações de email automático (FormSubmit)
+const EMAIL_DESTINO = 'f.gomesnascimento@icloud.com';
+const FORMSUBMIT_URL = `https://formsubmit.co/ajax/${EMAIL_DESTINO}`;
+
+function iniciar() {
+  // Listener para mudanças nos clientes
+  onValue(ref(db, 'clientes'), (snapshot) => {
+    clientes = snapshot.val() || {};
+    renderClientes();
+    verificarAvisosEmail();
+  });
+}
+
+// Calcula quantos dias restam do trial
+function diasRestantesTrial(cliente) {
+  if (!cliente.trialAtivo || !cliente.dataInicio) return null;
+  const inicio = new Date(cliente.dataInicio + 'T00:00:00');
+  const fim = new Date(inicio.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const agora = new Date();
+  const ms = fim - agora;
+  return Math.ceil(ms / (24 * 60 * 60 * 1000));
+}
+
+// Determina o status visual do cliente
+function statusCliente(cliente) {
+  if (cliente.bloqueado) return { classe: 'bloqueado', tag: '🔒 Bloqueado', tagClasse: 'status-bloqueado' };
+  if (!cliente.trialAtivo) return { classe: 'semtrial', tag: '🔓 Sem trial — uso livre', tagClasse: 'status-semtrial' };
+
+  const dias = diasRestantesTrial(cliente);
+  if (dias === null) return { classe: 'ok', tag: 'Trial sem data', tagClasse: 'status-trial-ativo' };
+  if (dias < 0) return { classe: 'urgente', tag: `❌ Vencido há ${Math.abs(dias)}d`, tagClasse: 'status-trial-vencido' };
+  if (dias <= 1) return { classe: 'urgente', tag: `🚨 Vence ${dias === 0 ? 'HOJE' : 'amanhã'}`, tagClasse: 'status-trial-urgente' };
+  if (dias <= 7) return { classe: 'alerta', tag: `⏰ Vence em ${dias}d`, tagClasse: 'status-trial-alerta' };
+  return { classe: 'ok', tag: `✅ ${dias}d restantes`, tagClasse: 'status-trial-ativo' };
+}
+
+function renderClientes() {
+  const grid = document.getElementById('clientesGrid');
+  const lista = Object.entries(clientes);
+
+  // Atualizar estatísticas
+  const total = lista.length;
+  const emTrial = lista.filter(([_, c]) => c.trialAtivo && !c.bloqueado).length;
+  const bloqueados = lista.filter(([_, c]) => c.bloqueado).length;
+  const alertas = lista.filter(([_, c]) => {
+    const d = diasRestantesTrial(c);
+    return d !== null && d >= 0 && d <= 7 && !c.bloqueado;
+  }).length;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statTrialAtivo').textContent = emTrial;
+  document.getElementById('statBloqueado').textContent = bloqueados;
+  document.getElementById('statAlerta').textContent = alertas;
+
+  if (lista.length === 0) {
+    grid.innerHTML = '<div class="empty">📭 Nenhum cliente cadastrado ainda. Clique em "➕ Cadastrar novo cliente" pra começar!</div>';
+    return;
+  }
+
+  // Ordena: urgentes primeiro, depois alertas, depois ok
+  lista.sort(([_, a], [__, b]) => {
+    const ordem = { urgente: 0, alerta: 1, ok: 2, semtrial: 3, bloqueado: 4 };
+    return ordem[statusCliente(a).classe] - ordem[statusCliente(b).classe];
+  });
+
+  grid.innerHTML = lista.map(([id, c]) => {
+    const status = statusCliente(c);
+    const dias = diasRestantesTrial(c);
+
+    let progressoHtml = '';
+    if (c.trialAtivo && c.dataInicio) {
+      const totalDias = 30;
+      const passados = Math.max(0, Math.min(totalDias, totalDias - (dias || 0)));
+      const pct = (passados / totalDias) * 100;
+      let cor = '#4CAF50';
+      if (dias !== null && dias <= 7) cor = '#FF8C42';
+      if (dias !== null && dias <= 1) cor = '#C0392B';
+      if (dias !== null && dias < 0) cor = '#B71C1C';
+      progressoHtml = `
+        <div class="trial-progresso">
+          <div class="trial-progresso-bar">
+            <div class="trial-progresso-fill" style="width:${Math.min(100, pct)}%; background:${cor};"></div>
+          </div>
+          <div class="trial-progresso-info">
+            <span>Início: <strong>${formatarData(c.dataInicio)}</strong></span>
+            <span>${dias !== null && dias >= 0 ? `${dias}d restantes` : (dias < 0 ? `vencido` : '')}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    const wppFmt = c.whatsapp ? c.whatsapp.replace(/^(\d{2})(\d{2})(\d{4,5})(\d{4})$/, '+$1 ($2) $3-$4') : '—';
+
+    return `
+      <div class="cliente-card ${status.classe}">
+        <div class="cliente-header">
+          <div class="cliente-nome">${escape(c.nome)}</div>
+          <span class="cliente-status ${status.tagClasse}">${status.tag}</span>
+        </div>
+        <div class="cliente-info">
+          ${c.localizacao ? `📍 ${escape(c.localizacao)}<br>` : ''}
+          ${c.whatsapp ? `📱 <strong>${wppFmt}</strong><br>` : ''}
+          🔗 <a href="${escape(c.link)}" target="_blank" style="color:#003D5B;">${escape(c.link.replace(/^https?:\/\//, ''))}</a>
+          ${c.observacoes ? `<br>📝 <em>${escape(c.observacoes)}</em>` : ''}
+        </div>
+        ${progressoHtml}
+        <div class="cliente-acoes">
+          <button class="btn-link" onclick="window.open('${escape(c.link)}', '_blank')">🔗 Abrir</button>
+          <button class="btn-editar" onclick="editarCliente('${id}')">✏️ Editar</button>
+          ${c.bloqueado
+            ? `<button class="btn-liberar" onclick="alternarBloqueio('${id}', false)">🔓 Liberar</button>`
+            : `<button class="btn-bloquear" onclick="alternarBloqueio('${id}', true)">🔒 Bloquear</button>`}
+          <button class="btn-trial-toggle" onclick="alternarTrial('${id}')" title="${c.trialAtivo ? 'Desativar trial' : 'Ativar trial'}">📅 ${c.trialAtivo ? 'Desat. trial' : 'Ativ. trial'}</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escape(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+}
+
+function formatarData(iso) {
+  if (!iso) return '—';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y.slice(2)}`;
+}
+
+function abrirModalCliente() {
+  clienteEditando = null;
+  document.getElementById('modalTitulo').textContent = '➕ Cadastrar novo cliente';
+  document.getElementById('inpNome').value = '';
+  document.getElementById('inpLocalizacao').value = '';
+  document.getElementById('inpLink').value = '';
+  document.getElementById('inpWhatsapp').value = '';
+  document.getElementById('inpDataInicio').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('inpObs').value = '';
+  document.getElementById('inpTrialAtivo').checked = true;
+  document.getElementById('msgErro').style.display = 'none';
+  document.getElementById('modalCliente').classList.add('show');
+}
+
+function editarCliente(id) {
+  const c = clientes[id];
+  if (!c) return;
+  clienteEditando = id;
+  document.getElementById('modalTitulo').textContent = `✏️ Editar: ${c.nome}`;
+  document.getElementById('inpNome').value = c.nome || '';
+  document.getElementById('inpLocalizacao').value = c.localizacao || '';
+  document.getElementById('inpLink').value = c.link || '';
+  document.getElementById('inpWhatsapp').value = c.whatsapp || '';
+  document.getElementById('inpDataInicio').value = c.dataInicio || '';
+  document.getElementById('inpObs').value = c.observacoes || '';
+  document.getElementById('inpTrialAtivo').checked = !!c.trialAtivo;
+  document.getElementById('msgErro').style.display = 'none';
+  document.getElementById('modalCliente').classList.add('show');
+}
+
+function fecharModalCliente() {
+  document.getElementById('modalCliente').classList.remove('show');
+  clienteEditando = null;
+}
+
+function salvarCliente() {
+  const nome = document.getElementById('inpNome').value.trim();
+  const link = document.getElementById('inpLink').value.trim();
+  const whatsapp = document.getElementById('inpWhatsapp').value.trim();
+  const dataInicio = document.getElementById('inpDataInicio').value;
+  const trialAtivo = document.getElementById('inpTrialAtivo').checked;
+  const erro = document.getElementById('msgErro');
+
+  if (!nome) { erro.textContent = '⚠️ Nome é obrigatório.'; erro.style.display = 'block'; return; }
+  if (!link) { erro.textContent = '⚠️ Link do cardápio é obrigatório.'; erro.style.display = 'block'; return; }
+  if (whatsapp && !/^\d{12,15}$/.test(whatsapp)) { erro.textContent = '⚠️ WhatsApp deve ter 12-15 dígitos (sem espaços/hífens).'; erro.style.display = 'block'; return; }
+  if (trialAtivo && !dataInicio) { erro.textContent = '⚠️ Data de início é obrigatória se trial estiver ativo.'; erro.style.display = 'block'; return; }
+
+  const dados = {
+    nome,
+    localizacao: document.getElementById('inpLocalizacao').value.trim(),
+    link,
+    whatsapp,
+    dataInicio: trialAtivo ? dataInicio : '',
+    observacoes: document.getElementById('inpObs').value.trim(),
+    trialAtivo,
+    bloqueado: clienteEditando ? !!clientes[clienteEditando].bloqueado : false,
+    atualizadoEm: Date.now(),
+  };
+
+  const promessa = clienteEditando
+    ? update(ref(db, `clientes/${clienteEditando}`), dados)
+    : push(ref(db, 'clientes'), { ...dados, criadoEm: Date.now() });
+
+  promessa
+    .then(() => fecharModalCliente())
+    .catch(err => {
+      erro.textContent = '❌ Erro ao salvar: ' + err.message;
+      erro.style.display = 'block';
+    });
+}
+
+function alternarBloqueio(id, bloqueado) {
+  const c = clientes[id];
+  if (!c) return;
+  const acao = bloqueado ? 'BLOQUEAR' : 'LIBERAR';
+  if (!confirm(`${acao} o cardápio de "${c.nome}"?\n\n${bloqueado ? 'O cliente verá uma tela de aviso indicando que o período encerrou.' : 'O cardápio voltará a ficar acessível normalmente.'}`)) return;
+  update(ref(db, `clientes/${id}`), { bloqueado, atualizadoEm: Date.now() });
+}
+
+function alternarTrial(id) {
+  const c = clientes[id];
+  if (!c) return;
+  const novoEstado = !c.trialAtivo;
+  if (novoEstado && !c.dataInicio) {
+    if (confirm(`Ativar trial de 30 dias para "${c.nome}"?\n\nA data de início será HOJE (${new Date().toLocaleDateString('pt-BR')}).`)) {
+      update(ref(db, `clientes/${id}`), {
+        trialAtivo: true,
+        dataInicio: new Date().toISOString().slice(0, 10),
+        atualizadoEm: Date.now(),
+      });
+    }
+  } else {
+    if (confirm(`${novoEstado ? 'Ativar' : 'Desativar'} trial de "${c.nome}"?`)) {
+      update(ref(db, `clientes/${id}`), { trialAtivo: novoEstado, atualizadoEm: Date.now() });
+    }
+  }
+}
+
+// 📧 Verificar e disparar avisos de email (7, 3, 1 dia)
+function verificarAvisosEmail() {
+  const hoje = new Date().toISOString().slice(0, 10);
+  Object.entries(clientes).forEach(([id, c]) => {
+    if (!c.trialAtivo || c.bloqueado) return;
+    const dias = diasRestantesTrial(c);
+    if (dias === null) return;
+
+    const marcosAviso = { 7: 'aviso7', 3: 'aviso3', 1: 'aviso1' };
+    if (marcosAviso[dias]) {
+      const chave = marcosAviso[dias];
+      // Só envia se NÃO tiver enviado hoje pra esse cliente neste marco
+      const ultimoAviso = c[chave + '_data'];
+      if (ultimoAviso !== hoje) {
+        enviarEmail(c, dias);
+        update(ref(db, `clientes/${id}`), { [chave + '_data']: hoje });
+      }
+    }
+  });
+}
+
+function enviarEmail(cliente, diasRestantes) {
+  const assunto = `🚨 Trial de "${cliente.nome}" vence em ${diasRestantes} dia${diasRestantes > 1 ? 's' : ''}`;
+  const mensagem = `
+Atenção, Felipe!
+
+O período de teste do cliente "${cliente.nome}" está próximo do fim:
+
+📅 Início do trial: ${formatarData(cliente.dataInicio)}
+⏰ Dias restantes: ${diasRestantes}
+📱 WhatsApp do cliente: ${cliente.whatsapp || 'não cadastrado'}
+🔗 Cardápio: ${cliente.link}
+
+Entre em contato para fechar a venda ou renovar o trial.
+
+— Painel de Clientes — 77 IS Tecnologia
+  `.trim();
+
+  fetch(FORMSUBMIT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      _subject: assunto,
+      _template: 'box',
+      mensagem: mensagem,
+      cliente: cliente.nome,
+      diasRestantes: diasRestantes,
+    }),
+  })
+    .then(r => r.json())
+    .then(data => console.log('📧 Aviso enviado:', cliente.nome, diasRestantes, data))
+    .catch(err => console.error('❌ Erro ao enviar email:', err));
+}
+
+// Expor funções globais
+window.abrirModalCliente = abrirModalCliente;
+window.editarCliente = editarCliente;
+window.fecharModalCliente = fecharModalCliente;
+window.salvarCliente = salvarCliente;
+window.alternarBloqueio = alternarBloqueio;
+window.alternarTrial = alternarTrial;
+</script>
+
+</body>
+</html>
