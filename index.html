@@ -1521,16 +1521,14 @@ onValue(ref(db, `${DB_KEY}/ordem`), (snap) => {
   render();
 });
 
-// Verificar bloqueio do trial
-onValue(ref(db, 'clientes'), (snapshot) => {
-  const clientes = snapshot.val();
-  if (clientes) {
-    const cliente = Object.values(clientes).find(c => c.link && c.link.includes('is-tecnologia'));
-    if (cliente && cliente.bloqueado) {
-      document.getElementById('telaBloqueio').classList.add('show');
-    } else {
-      document.getElementById('telaBloqueio').classList.remove('show');
-    }
+// Verificar bloqueio do trial - lê só o espelho reduzido do próprio negócio,
+// não o CRM inteiro (que agora só o super-admin pode ler).
+onValue(ref(db, `${DB_KEY}/bloqueio`), (snapshot) => {
+  const cliente = snapshot.val();
+  if (cliente && cliente.bloqueado) {
+    document.getElementById('telaBloqueio').classList.add('show');
+  } else {
+    document.getElementById('telaBloqueio').classList.remove('show');
   }
 });
 

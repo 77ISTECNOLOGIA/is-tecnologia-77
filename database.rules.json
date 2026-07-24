@@ -21,12 +21,9 @@
     },
 
     "clientes": {
-      // Leitura publica mantida (usada pela propria pagina do cardapio pra
-      // checar se o negocio esta bloqueado/trial vencido) - restringir isso
-      // direito exige mover o status de bloqueio pra dentro de cada negocio,
-      // fora do escopo desta correcao. Escrita e so do super-admin - e o CRM
-      // interno da 77 IS, donos de negocio individual nao devem mexer nisso.
-      ".read": true
+      // CRM interno da 77 IS - so o super-admin le/escreve (herda da raiz).
+      // O cardapio publico nao le mais isso direto; usa $negocio/bloqueio,
+      // um espelho reduzido mantido pelo painel_clientes.html.
     },
 
     "$negocio": {
@@ -65,6 +62,14 @@
           ".read": true
         },
         ".write": "auth != null && root.child('admins').child(auth.uid).child('dbKey').val() === $negocio"
+      },
+
+      "bloqueio": {
+        // Espelho reduzido (bloqueado/trialAtivo/dataInicio) escrito pelo
+        // painel_clientes.html - leitura publica pra pagina do cardapio
+        // checar bloqueio sem precisar ler o CRM inteiro. So o super-admin
+        // escreve (herda da raiz).
+        ".read": true
       }
     }
   }

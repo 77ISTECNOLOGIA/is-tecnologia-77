@@ -623,6 +623,30 @@ function editarCliente(id) {
   document.getElementById('modalCliente').classList.add('show');
 }
 
+// Extrai a chave do negócio (ex: "ray-galo-135") a partir do link salvo
+// (ex: "https://ray-galo-135.vercel.app") - é o mesmo DB_KEY usado no
+// próprio cardápio, então o link precisa apontar pro domínio certo.
+function extrairDbKey(link) {
+  try {
+    return new URL(link).hostname.split('.')[0];
+  } catch (e) {
+    return null;
+  }
+}
+
+// Espelha só o essencial (bloqueado/trialAtivo/dataInicio) dentro do
+// próprio negócio, pra ele checar bloqueio sem precisar ler a coleção
+// inteira de clientes (que fica só com o super-admin).
+function sincronizarBloqueio(link, dados) {
+  const dbKey = extrairDbKey(link);
+  if (!dbKey) return;
+  update(ref(db, `${dbKey}/bloqueio`), {
+    bloqueado: !!dados.bloqueado,
+    trialAtivo: !!dados.trialAtivo,
+    dataInicio: dados.dataInicio || '',
+  });
+}
+
 function fecharModalCliente() {
   document.getElementById('modalCliente').classList.remove('show');
   clienteEditando = null;
@@ -658,7 +682,10 @@ function salvarCliente() {
     : push(ref(db, 'clientes'), { ...dados, criadoEm: Date.now() });
 
   promessa
-    .then(() => fecharModalCliente())
+    .then(() => {
+      sincronizarBloqueio(link, dados);
+      fecharModalCliente();
+    })
     .catch(err => {
       erro.textContent = '❌ Erro ao salvar: ' + err.message;
       erro.style.display = 'block';
@@ -671,6 +698,7 @@ function alternarBloqueio(id, bloqueado) {
   const acao = bloqueado ? 'BLOQUEAR' : 'LIBERAR';
   if (!confirm(`${acao} o cardápio de "${c.nome}"?\n\n${bloqueado ? 'O cliente verá uma tela de aviso indicando que o período encerrou.' : 'O cardápio voltará a ficar acessível normalmente.'}`)) return;
   update(ref(db, `clientes/${id}`), { bloqueado, atualizadoEm: Date.now() });
+  sincronizarBloqueio(c.link, { bloqueado, trialAtivo: c.trialAtivo, dataInicio: c.dataInicio });
 }
 
 function alternarTrial(id) {
@@ -679,15 +707,18 @@ function alternarTrial(id) {
   const novoEstado = !c.trialAtivo;
   if (novoEstado && !c.dataInicio) {
     if (confirm(`Ativar trial de 30 dias para "${c.nome}"?\n\nA data de início será HOJE (${new Date().toLocaleDateString('pt-BR')}).`)) {
+      const dataInicio = new Date().toISOString().slice(0, 10);
       update(ref(db, `clientes/${id}`), {
         trialAtivo: true,
-        dataInicio: new Date().toISOString().slice(0, 10),
+        dataInicio,
         atualizadoEm: Date.now(),
       });
+      sincronizarBloqueio(c.link, { bloqueado: c.bloqueado, trialAtivo: true, dataInicio });
     }
   } else {
     if (confirm(`${novoEstado ? 'Ativar' : 'Desativar'} trial de "${c.nome}"?`)) {
       update(ref(db, `clientes/${id}`), { trialAtivo: novoEstado, atualizadoEm: Date.now() });
+      sincronizarBloqueio(c.link, { bloqueado: c.bloqueado, trialAtivo: novoEstado, dataInicio: c.dataInicio });
     }
   }
 }
