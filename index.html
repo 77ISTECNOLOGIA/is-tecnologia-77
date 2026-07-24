@@ -1506,27 +1506,34 @@ function render() {
   });
 }
 
-// Firebase — carregar dados
-onValue(ref(db, DB_KEY), (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    if (data.produtos) {
-      data.produtos.forEach((ativo, i) => { if (produtos[i]) produtos[i].ativo = ativo; });
-    }
-    if (data.dados) {
-      Object.keys(data.dados).forEach(key => {
-        const idx = parseInt(key);
-        const d = data.dados[key];
-        if (!d) return;
-        if (produtos[idx]) {
-          Object.keys(d).forEach(k => { produtos[idx][k] = d[k]; });
-        } else {
-          produtos[idx] = { ...d, ativo: d.ativo !== undefined ? d.ativo : true };
-        }
-      });
-    }
-    if (data.ordem) ordemCategorias = data.ordem;
+// Firebase — carregar dados (produtos/dados/ordem lidos separadamente, não
+// o nó inteiro: pedidos e config/senhaCancelamento não são públicos)
+onValue(ref(db, `${DB_KEY}/produtos`), (snap) => {
+  const val = snap.val();
+  if (val) val.forEach((ativo, i) => { if (produtos[i]) produtos[i].ativo = ativo; });
+  render();
+});
+
+onValue(ref(db, `${DB_KEY}/dados`), (snap) => {
+  const val = snap.val();
+  if (val) {
+    Object.keys(val).forEach(key => {
+      const idx = parseInt(key);
+      const d = val[key];
+      if (!d) return;
+      if (produtos[idx]) {
+        Object.keys(d).forEach(k => { produtos[idx][k] = d[k]; });
+      } else {
+        produtos[idx] = { ...d, ativo: d.ativo !== undefined ? d.ativo : true };
+      }
+    });
   }
+  render();
+});
+
+onValue(ref(db, `${DB_KEY}/ordem`), (snap) => {
+  const val = snap.val();
+  if (val) ordemCategorias = val;
   render();
 });
 

@@ -1,0 +1,61 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "admins": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": false
+      }
+    },
+
+    "clientes": {
+      // Leitura publica mantida (usada pela propria pagina do cardapio pra
+      // checar se o negocio esta bloqueado/trial vencido) - restringir isso
+      // direito exige mover o status de bloqueio pra dentro de cada negocio,
+      // fora do escopo desta correcao emergencial. A escrita, que e o vetor
+      // destrutivo real, fica restrita a quem estiver autenticado.
+      ".read": true,
+      "$clienteId": {
+        ".write": "auth != null"
+      }
+    },
+
+    "$negocio": {
+      // Painel admin (admin_*.html) le o no inteiro de uma vez apos o login -
+      // so o dono autenticado deste negocio especifico ganha isso; visitante
+      // anonimo continua so com os sub-nos explicitamente liberados abaixo.
+      ".read": "auth != null && root.child('admins').child(auth.uid).child('dbKey').val() === $negocio",
+
+      "produtos": {
+        ".read": true,
+        ".write": "auth != null && root.child('admins').child(auth.uid).child('dbKey').val() === $negocio"
+      },
+
+      "dados": {
+        ".read": true,
+        ".write": "auth != null && root.child('admins').child(auth.uid).child('dbKey').val() === $negocio"
+      },
+
+      "ordem": {
+        ".read": true,
+        ".write": "auth != null && root.child('admins').child(auth.uid).child('dbKey').val() === $negocio"
+      },
+
+      "pedidos": {
+        ".read": true,
+        "$pedidoId": {
+          ".write": "!data.exists() || (auth != null && root.child('admins').child(auth.uid).child('dbKey').val() === $negocio)"
+        }
+      },
+
+      "config": {
+        "whatsapp": {
+          ".read": true
+        },
+        ".write": "auth != null && root.child('admins').child(auth.uid).child('dbKey').val() === $negocio"
+      }
+    }
+  }
+}
