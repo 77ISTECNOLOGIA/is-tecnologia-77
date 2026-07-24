@@ -554,9 +554,58 @@
     }
   }
 
+  /* 🔒 Tela de login do admin (Firebase Authentication) */
+  .tela-login-admin {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, #003D5B 0%, #0077A6 100%);
+    z-index: 999999;
+    display: flex;
+    align-items: center; justify-content: center;
+    padding: 2rem 1.5rem;
+  }
+  .tela-login-admin.hide { display: none; }
+  .tela-login-admin .caixa {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    border: 3px solid #FF8C42;
+  }
+  .tela-login-admin .icone { font-size: 3rem; margin-bottom: 1rem; }
+  .tela-login-admin h1 { color: #003D5B; font-size: 1.3rem; margin-bottom: 1.4rem; }
+  .tela-login-admin form { text-align: left; }
+  .tela-login-admin label { display: block; font-weight: bold; color: #003D5B; font-size: 0.85rem; margin-bottom: 4px; }
+  .tela-login-admin input {
+    width: 100%; padding: 10px; border: 2px solid #003D5B; border-radius: 8px;
+    margin-bottom: 12px; font-size: 1rem; font-family: inherit;
+  }
+  .tela-login-admin .erro { color: #C0392B; font-size: 0.85rem; margin: 4px 0 8px; display: none; }
+  .tela-login-admin button {
+    width: 100%; padding: 12px; background: #003D5B; color: white; border: none;
+    border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;
+  }
+  .tela-login-admin button:disabled { opacity: 0.6; cursor: default; }
 </style>
 </head>
 <body>
+
+<!-- 🔒 Tela de login do admin (Firebase Authentication) -->
+<div class="tela-login-admin" id="telaLoginAdmin">
+  <div class="caixa">
+    <div class="icone">🔒</div>
+    <h1>Painel Admin — IS Tecnologia 77</h1>
+    <form id="formLoginAdmin">
+      <label for="loginEmail">E-mail</label>
+      <input type="email" id="loginEmail" required autocomplete="username">
+      <label for="loginSenha">Senha</label>
+      <input type="password" id="loginSenha" required autocomplete="current-password">
+      <p class="erro" id="loginErro"></p>
+      <button type="submit" id="btnLoginAdmin">Entrar</button>
+    </form>
+  </div>
+</div>
 
 <header>
   <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;">
@@ -766,7 +815,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, get, onValue, set, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAX6X6ZX__HxwamgN4wcx8p1jgoQUEWtjE",
@@ -780,23 +830,62 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const authInst = getAuth(app);
 const DB_KEY = 'is-tecnologia-77';
 
-// 🔒 Proteção de acesso — só permite entrar com ?admin=istech77
-const params = new URLSearchParams(window.location.search);
-if (params.get('admin') !== 'istech77') {
-  document.body.innerHTML = `
-    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#003D5B 0%,#0077A6 100%);padding:2rem;">
-      <div style="background:white;padding:2.5rem;border-radius:16px;text-align:center;max-width:400px;border:3px solid #FF8C42;">
-        <div style="font-size:3rem;margin-bottom:1rem;">🔒</div>
-        <h1 style="color:#003D5B;font-size:1.4rem;margin-bottom:0.8rem;">Acesso restrito</h1>
-        <p style="color:#666;font-size:0.95rem;line-height:1.5;">Esta área é exclusiva para o administrador da barraca <strong>IS Tecnologia 77</strong>.</p>
-        <p style="color:#999;font-size:0.8rem;margin-top:1rem;">Se você é o administrador, utilize o link completo enviado a você.</p>
-      </div>
-    </div>
-  `;
-  throw new Error('Acesso não autorizado');
+// 🔒 Login real do administrador (Firebase Authentication) — bloqueia o
+// restante do painel até confirmar que a conta logada pertence a esta barraca
+// (checagem via nó admins/{uid}.dbKey, criado junto com o usuário).
+async function exigirLoginAdmin() {
+  const overlay   = document.getElementById('telaLoginAdmin');
+  const form      = document.getElementById('formLoginAdmin');
+  const erroEl    = document.getElementById('loginErro');
+  const btn       = document.getElementById('btnLoginAdmin');
+
+  return new Promise((resolve) => {
+    let liberado = false;
+
+    onAuthStateChanged(authInst, async (user) => {
+      if (!user || liberado) return;
+      try {
+        const snap = await get(ref(db, `admins/${user.uid}`));
+        if (snap.exists() && snap.val().dbKey === DB_KEY) {
+          liberado = true;
+          overlay.classList.add('hide');
+          resolve();
+        } else {
+          erroEl.textContent = 'Esta conta não tem acesso ao painel desta barraca.';
+          erroEl.style.display = 'block';
+          await signOut(authInst);
+        }
+      } catch (e) {
+        erroEl.textContent = 'Erro ao verificar acesso: ' + e.message;
+        erroEl.style.display = 'block';
+        await signOut(authInst);
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      erroEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Entrando...';
+      const email = document.getElementById('loginEmail').value.trim();
+      const senha = document.getElementById('loginSenha').value;
+      try {
+        await signInWithEmailAndPassword(authInst, email, senha);
+      } catch (err) {
+        erroEl.textContent = 'E-mail ou senha incorretos.';
+        erroEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      }
+    });
+  });
 }
+
+await exigirLoginAdmin();
 
 // Lista base de produtos (mesma do cardápio)
 let produtos = [

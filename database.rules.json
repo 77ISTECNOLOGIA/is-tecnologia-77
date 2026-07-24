@@ -1,7 +1,17 @@
 {
   "rules": {
-    ".read": false,
-    ".write": false,
+    // Super-admin (Felipe / 77 IS) tem acesso total a tudo, em cascata -
+    // simplifica todas as regras abaixo em vez de repetir a condicao em
+    // cada no.
+    ".read": "auth != null && root.child('superadmins').child(auth.uid).exists()",
+    ".write": "auth != null && root.child('superadmins').child(auth.uid).exists()",
+
+    "superadmins": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": false
+      }
+    },
 
     "admins": {
       "$uid": {
@@ -14,12 +24,9 @@
       // Leitura publica mantida (usada pela propria pagina do cardapio pra
       // checar se o negocio esta bloqueado/trial vencido) - restringir isso
       // direito exige mover o status de bloqueio pra dentro de cada negocio,
-      // fora do escopo desta correcao emergencial. A escrita, que e o vetor
-      // destrutivo real, fica restrita a quem estiver autenticado.
-      ".read": true,
-      "$clienteId": {
-        ".write": "auth != null"
-      }
+      // fora do escopo desta correcao. Escrita e so do super-admin - e o CRM
+      // interno da 77 IS, donos de negocio individual nao devem mexer nisso.
+      ".read": true
     },
 
     "$negocio": {

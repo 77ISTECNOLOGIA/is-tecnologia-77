@@ -28,6 +28,34 @@
   .bloqueio h1 { font-size: 1.6rem; margin-bottom: 1rem; }
   .bloqueio p { font-size: 0.95rem; opacity: 0.9; line-height: 1.5; max-width: 400px; }
 
+  /* Login (Firebase Authentication) */
+  .tela-login-admin {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: #003D5B;
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem 1.5rem;
+  }
+  .tela-login-admin.hide { display: none; }
+  .tela-login-admin .caixa {
+    background: white; padding: 2.5rem; border-radius: 16px;
+    text-align: center; max-width: 400px; width: 100%;
+    color: #003D5B;
+  }
+  .tela-login-admin h1 { font-size: 1.3rem; margin-bottom: 1.4rem; }
+  .tela-login-admin form { text-align: left; }
+  .tela-login-admin label { display: block; font-weight: bold; font-size: 0.85rem; margin-bottom: 4px; }
+  .tela-login-admin input {
+    width: 100%; padding: 10px; border: 2px solid #003D5B; border-radius: 8px;
+    margin-bottom: 12px; font-size: 1rem; font-family: inherit; box-sizing: border-box;
+  }
+  .tela-login-admin .erro { color: #C0392B; font-size: 0.85rem; margin: 4px 0 8px; display: none; }
+  .tela-login-admin button {
+    width: 100%; padding: 12px; background: #003D5B; color: white; border: none;
+    border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;
+  }
+  .tela-login-admin button:disabled { opacity: 0.6; cursor: default; }
+
   /* Header */
   header {
     background: linear-gradient(135deg, #003D5B 0%, #0077A6 100%);
@@ -286,11 +314,19 @@
 </head>
 <body>
 
-<!-- 🔒 Tela de bloqueio (acesso master) -->
-<div class="bloqueio" id="telaBloqueio">
-  <h1>🔒 Acesso restrito</h1>
-  <p>Este painel é restrito ao administrador.<br>
-  Acesse pelo link com a senha master correta.</p>
+<!-- 🔒 Login (Firebase Authentication) -->
+<div class="tela-login-admin" id="telaLoginAdmin">
+  <div class="caixa">
+    <h1>🔒 Painel de Clientes — 77 IS Tecnologia</h1>
+    <form id="formLoginAdmin">
+      <label for="loginEmail">E-mail</label>
+      <input type="email" id="loginEmail" required autocomplete="username">
+      <label for="loginSenha">Senha</label>
+      <input type="password" id="loginSenha" required autocomplete="current-password">
+      <p class="erro" id="loginErro"></p>
+      <button type="submit" id="btnLoginAdmin">Entrar</button>
+    </form>
+  </div>
 </div>
 
 <!-- Container principal -->
@@ -354,7 +390,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, get, onValue, set, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAX6X6ZX__HxwamgN4wcx8p1jgoQUEWtjE",
@@ -365,21 +402,63 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const authInst = getAuth(app);
 
-// 🔒 Bloqueio de acesso master
-const SENHAS_MASTER = ['master77istech', 'felipe2026'];
-let acessoLiberado = false;
+// 🔒 Login real (Firebase Authentication) — só quem está no nó
+// superadmins/{uid} do banco entra. Painel de gestão de TODOS os
+// clientes: não usa o mesmo login "por negócio" dos outros painéis.
+async function exigirLoginSuperAdmin() {
+  const overlay = document.getElementById('telaLoginAdmin');
+  const form    = document.getElementById('formLoginAdmin');
+  const erroEl  = document.getElementById('loginErro');
+  const btn     = document.getElementById('btnLoginAdmin');
 
-(function checarAcesso() {
-  const params = new URLSearchParams(window.location.search);
-  const senha = params.get('master');
-  if (senha && SENHAS_MASTER.includes(senha)) {
-    acessoLiberado = true;
-    document.getElementById('telaBloqueio').style.display = 'none';
-    document.getElementById('container').style.display = 'block';
-    iniciar();
-  }
-})();
+  return new Promise((resolve) => {
+    let liberado = false;
+
+    onAuthStateChanged(authInst, async (user) => {
+      if (!user || liberado) return;
+      try {
+        const snap = await get(ref(db, `superadmins/${user.uid}`));
+        if (snap.exists()) {
+          liberado = true;
+          overlay.classList.add('hide');
+          resolve();
+        } else {
+          erroEl.textContent = 'Esta conta não tem acesso a este painel.';
+          erroEl.style.display = 'block';
+          await signOut(authInst);
+        }
+      } catch (e) {
+        erroEl.textContent = 'Erro ao verificar acesso: ' + e.message;
+        erroEl.style.display = 'block';
+        await signOut(authInst);
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      erroEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Entrando...';
+      const email = document.getElementById('loginEmail').value.trim();
+      const senha = document.getElementById('loginSenha').value;
+      try {
+        await signInWithEmailAndPassword(authInst, email, senha);
+      } catch (err) {
+        erroEl.textContent = 'E-mail ou senha incorretos.';
+        erroEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      }
+    });
+  });
+}
+
+await exigirLoginSuperAdmin();
+document.getElementById('container').style.display = 'block';
+iniciar();
 
 let clientes = {};
 let clienteEditando = null; // ID do cliente sendo editado, ou null se for novo
