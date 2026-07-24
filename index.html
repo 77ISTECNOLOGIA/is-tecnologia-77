@@ -1192,6 +1192,7 @@ function confirmarEnvioPedido() {
 
   // 🧾 F4: salvar ID do pedido no localStorage para histórico do cliente
   salvarMeuPedido(pedidoPendenteKey);
+  assinarMeusPedidos();
 
   document.getElementById('modalConfirmacao').classList.remove('show');
   // Mostrar comprovante
@@ -1441,12 +1442,19 @@ function fecharMeusPedidos() {
 
 // Cache local de pedidos vindos do Firebase (para Meus Pedidos consultar sem chamada extra)
 let meusPedidosCache = {};
+const meusPedidosListeners = {};
 
-// Listener específico do Firebase para nó pedidos — popula meusPedidosCache
-onValue(ref(db, `${DB_KEY}/pedidos`), (snap) => {
-  meusPedidosCache = snap.val() || {};
-  atualizarBtnMeusPedidos();
-});
+function assinarMeusPedidos() {
+  getMeusPedidosIds().map(i => i.id).forEach(id => {
+    if (meusPedidosListeners[id]) return;
+    meusPedidosListeners[id] = true;
+    onValue(ref(db, `${DB_KEY}/pedidos/${id}`), (snap) => {
+      meusPedidosCache[id] = snap.val();
+      atualizarBtnMeusPedidos();
+    });
+  });
+}
+assinarMeusPedidos();
 
 function render() {
   const el = document.getElementById('cardapio');
