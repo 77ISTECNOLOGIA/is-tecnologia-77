@@ -33,16 +33,6 @@
   }
   .bloqueio-email { margin-top: 1rem; font-size: 0.85rem; opacity: 0.85; }
 
-  /* Admin bar */
-  .admin-bar {
-    display: none;
-    background: #FF8C42; color: #003D5B;
-    text-align: center; padding: 10px;
-    font-weight: bold; font-size: 0.9rem;
-    position: sticky; top: 0; z-index: 100;
-  }
-  .admin-bar.show { display: block; }
-
   /* Header */
   header {
     background: linear-gradient(135deg, #003D5B 0%, #0077A6 100%);
@@ -456,8 +446,6 @@
   <div class="bloqueio-email">f.gomesnascimento@icloud.com</div>
 </div>
 
-<div class="admin-bar" id="adminBar">🔧 Modo <span>Administrador</span> — ative ou desative produtos abaixo</div>
-
 <header>
   <div class="header-logo"><span style="font-size:5rem;line-height:1;">🌊</span></div>
   <div class="header-titulo">IS TECNOLOGIA</div>
@@ -578,7 +566,6 @@ const db = getDatabase(app);
 // Quando estiver pronta para produção, basta mudar para true
 const PEDIDOS_ATIVOS = true;
 
-const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'istech77';
 const DB_KEY = 'is-tecnologia-77';
 
 // Lista de produtos fictícios — apenas para testes da Barraca 77 IS TECNOLOGIA
@@ -995,13 +982,6 @@ function aplicarTraducoesUI() {
   // Se modal estiver aberto, re-renderiza os itens (pra atualizar "cada")
   const modal = document.getElementById('modalPedido');
   if (modal && modal.classList.contains('show')) renderizarItensModal();
-}
-
-function toggleProduto(idx) {
-  produtos[idx].ativo = !produtos[idx].ativo;
-  const estados = produtos.map(p => p.ativo);
-  set(ref(db, `${DB_KEY}/produtos`), estados);
-  render();
 }
 
 function adicionarPedido(idx) {
@@ -1460,8 +1440,6 @@ function render() {
   const el = document.getElementById('cardapio');
   el.innerHTML = '';
 
-  if (isAdmin) document.getElementById('adminBar').classList.add('show');
-
   ordemCategorias.forEach((categoria, ci) => {
     const itens = produtos.filter(p => p.categoria === categoria);
     if (itens.length === 0) return;
@@ -1483,9 +1461,7 @@ function render() {
       const qtdAtual = pedido[idx] || 0;
 
       let acaoHTML = '';
-      if (isAdmin) {
-        acaoHTML = `<label class="toggle"><input type="checkbox" ${p.ativo ? 'checked' : ''} onchange="toggleProduto(${idx})"><span class="toggle-slider"></span></label>`;
-      } else if (p.ativo && PEDIDOS_ATIVOS) {
+      if (p.ativo && PEDIDOS_ATIVOS) {
         acaoHTML = qtdAtual > 0
           ? `<div style="display:flex;align-items:center;gap:6px;"><button class="qtd-btn" onclick="removerPedido(${idx})">−</button><span class="qtd-display">${qtdAtual}</span><button class="qtd-btn" onclick="adicionarPedido(${idx})">+</button></div>`
           : `<button class="qtd-btn" onclick="adicionarPedido(${idx})" style="width:32px;height:32px;font-size:1.2rem;">+</button>`;
@@ -1559,7 +1535,6 @@ onValue(ref(db, 'clientes'), (snapshot) => {
 });
 
 window.setLang = setLang;
-window.toggleProduto = toggleProduto;
 window.adicionarPedido = adicionarPedido;
 window.removerPedido = removerPedido;
 window.abrirModalPedido = abrirModalPedido;
