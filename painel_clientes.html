@@ -634,15 +634,17 @@ function extrairDbKey(link) {
   }
 }
 
-// Espelha só o essencial (bloqueado/trialAtivo/dataInicio) dentro do
+// Espelha só o essencial (bloqueado/trialAtivo/dataInicio/nome) dentro do
 // próprio negócio, pra ele checar bloqueio sem precisar ler a coleção
-// inteira de clientes (que fica só com o super-admin).
+// inteira de clientes (que fica só com o super-admin). "nome" é usado só
+// pra montar a mensagem de WhatsApp do dono - não é dado sensível.
 function sincronizarBloqueio(link, dados) {
   const dbKey = extrairDbKey(link);
   if (!dbKey) return;
   update(ref(db, `${dbKey}/bloqueio`), {
     bloqueado: !!dados.bloqueado,
     trialAtivo: !!dados.trialAtivo,
+    nome: dados.nome || '',
     dataInicio: dados.dataInicio || '',
   });
 }
@@ -698,7 +700,7 @@ function alternarBloqueio(id, bloqueado) {
   const acao = bloqueado ? 'BLOQUEAR' : 'LIBERAR';
   if (!confirm(`${acao} o cardápio de "${c.nome}"?\n\n${bloqueado ? 'O cliente verá uma tela de aviso indicando que o período encerrou.' : 'O cardápio voltará a ficar acessível normalmente.'}`)) return;
   update(ref(db, `clientes/${id}`), { bloqueado, atualizadoEm: Date.now() });
-  sincronizarBloqueio(c.link, { bloqueado, trialAtivo: c.trialAtivo, dataInicio: c.dataInicio });
+  sincronizarBloqueio(c.link, { bloqueado, trialAtivo: c.trialAtivo, dataInicio: c.dataInicio, nome: c.nome });
 }
 
 function alternarTrial(id) {
@@ -713,12 +715,12 @@ function alternarTrial(id) {
         dataInicio,
         atualizadoEm: Date.now(),
       });
-      sincronizarBloqueio(c.link, { bloqueado: c.bloqueado, trialAtivo: true, dataInicio });
+      sincronizarBloqueio(c.link, { bloqueado: c.bloqueado, trialAtivo: true, dataInicio, nome: c.nome });
     }
   } else {
     if (confirm(`${novoEstado ? 'Ativar' : 'Desativar'} trial de "${c.nome}"?`)) {
       update(ref(db, `clientes/${id}`), { trialAtivo: novoEstado, atualizadoEm: Date.now() });
-      sincronizarBloqueio(c.link, { bloqueado: c.bloqueado, trialAtivo: novoEstado, dataInicio: c.dataInicio });
+      sincronizarBloqueio(c.link, { bloqueado: c.bloqueado, trialAtivo: novoEstado, dataInicio: c.dataInicio, nome: c.nome });
     }
   }
 }
