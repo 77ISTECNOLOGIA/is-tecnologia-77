@@ -4,199 +4,230 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Barraca 77 — IS TECNOLOGIA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg: #131417;
+    --surface: #1D1F24;
+    --surface-2: #26282F;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.14);
+    --text: #F5F6F8;
+    --text-muted: #9BA1AE;
+    --text-faint: #6B7280;
+    --accent: #FF7A1F;
+    --accent-2: #FFA85C;
+    --accent-soft: rgba(255,122,31,0.15);
+    --on-accent: #16171B;
+    --success: #4CBB7D;
+    --success-soft: rgba(76,187,125,0.15);
+    --warning: #E0A93E;
+    --warning-soft: rgba(224,169,62,0.15);
+    --danger: #E5564A;
+    --danger-soft: rgba(229,86,74,0.15);
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --shadow-md: 0 12px 28px -10px rgba(0,0,0,0.5);
+    --shadow-lg: 0 24px 50px -16px rgba(0,0,0,0.6);
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background: linear-gradient(180deg, #F0F8FF 0%, #FFFFFF 100%);
-    color: #003D5B;
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
     min-height: 100vh;
     padding-bottom: 2rem;
+    -webkit-font-smoothing: antialiased;
   }
+  .tabular { font-variant-numeric: tabular-nums; }
+
   /* Tela de bloqueio */
   .tela-bloqueio {
     display: none;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(42,27,92,0.95);
+    background: rgba(10,10,12,0.97);
     z-index: 9999;
     flex-direction: column; align-items: center; justify-content: center;
-    color: white; text-align: center; padding: 2rem;
+    color: var(--text); text-align: center; padding: 2rem;
   }
   .tela-bloqueio.show { display: flex; }
-  .tela-bloqueio h2 { font-size: 1.6rem; margin-bottom: 1rem; color: #FF8C42; }
-  .tela-bloqueio p { font-size: 1rem; margin-bottom: 1.5rem; max-width: 400px; }
+  .tela-bloqueio h2 { font-size: 1.6rem; margin-bottom: 1rem; color: var(--accent); font-weight: 800; }
+  .tela-bloqueio p { font-size: 1rem; margin-bottom: 1.5rem; max-width: 400px; color: var(--text-muted); }
   .tela-bloqueio a {
-    background: #FF8C42; color: #003D5B;
+    background: var(--accent); color: var(--on-accent);
     padding: 12px 28px; border-radius: 30px;
-    text-decoration: none; font-weight: bold;
+    text-decoration: none; font-weight: 800;
     display: inline-block; margin-top: 0.5rem;
+    box-shadow: var(--shadow-md);
   }
-  .bloqueio-email { margin-top: 1rem; font-size: 0.85rem; opacity: 0.85; }
+  .bloqueio-email { margin-top: 1rem; font-size: 0.85rem; opacity: 0.7; }
 
-  /* Header */
+  /* Header — compacto, escuro */
   header {
-    background: linear-gradient(135deg, #003D5B 0%, #0077A6 100%);
-    padding: 2rem 1rem 1.5rem;
-    text-align: center;
+    background: #0D0E10;
+    padding: 1.3rem 1.2rem 1rem;
     position: relative;
-    overflow: hidden;
+    border-bottom: 1px solid var(--border);
   }
-  header::before {
-    content: '';
-    position: absolute;
-    top: 10px; right: 10px;
-    width: 80px; height: 80px;
-    background-image: radial-gradient(circle, #FF8C42 2px, transparent 2px);
-    background-size: 12px 12px;
-    opacity: 0.4;
-  }
-  header::after {
-    content: '';
-    position: absolute;
-    bottom: -10px; left: -10px;
-    width: 80px; height: 80px;
-    background-image: radial-gradient(circle, #FF8C42 2px, transparent 2px);
-    background-size: 12px 12px;
-    opacity: 0.3;
+  .header-top {
+    display: flex; align-items: center; gap: 12px;
   }
   .header-logo {
-    width: 200px; height: 200px;
-    margin: 0 auto 0.8rem;
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    border: 1.5px solid var(--accent);
     display: flex; align-items: center; justify-content: center;
-    position: relative; z-index: 2;
-    filter: drop-shadow(0 0 20px rgba(255,215,0,0.5));
+    flex-shrink: 0;
+    font-size: 1.5rem; line-height: 1;
   }
+  .header-titulos { min-width: 0; }
   .header-titulo {
-    color: #FF8C42;
-    font-size: 1.8rem;
-    font-weight: 900;
-    letter-spacing: 0.08em;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    position: relative; z-index: 2;
+    color: var(--text);
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
   }
-  .header-numero {
-    color: #FF8C42;
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-top: 0.2rem;
-    position: relative; z-index: 2;
-  }
+  .header-titulo .num { color: var(--accent); }
   .header-slogan {
-    color: white;
-    font-size: 0.85rem;
-    margin-top: 0.6rem;
-    opacity: 0.9;
-    position: relative; z-index: 2;
-  }
-  .header-endereco {
-    color: white;
+    color: var(--text-muted);
     font-size: 0.78rem;
-    margin-top: 0.4rem;
-    opacity: 0.85;
-    position: relative; z-index: 2;
+    margin-top: 2px;
   }
+  .header-endereco { display: none; }
   .lang-bar {
-    display: flex; flex-wrap: wrap;
-    justify-content: center; gap: 6px;
-    margin-top: 1rem;
-    position: relative; z-index: 2;
+    display: flex; flex-wrap: nowrap;
+    gap: 6px;
+    margin-top: 0.9rem;
+    overflow-x: auto;
+    padding-bottom: 2px;
   }
+  .lang-bar::-webkit-scrollbar { display: none; }
   .lang-btn {
-    background: rgba(255,215,0,0.2);
-    border: 1px solid #FF8C42;
-    color: #FF8C42;
-    padding: 6px 12px; border-radius: 20px;
-    font-size: 0.78rem; cursor: pointer;
-    transition: all 0.2s;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 5px 11px; border-radius: 20px;
+    font-size: 0.74rem; font-weight: 600; cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
   }
-  .lang-btn:hover, .lang-btn.active {
-    background: #FF8C42; color: #003D5B;
-    font-weight: bold;
+  .lang-btn:hover { border-color: var(--border-strong); color: var(--text); }
+  .lang-btn.active {
+    background: var(--accent); color: var(--on-accent); border-color: var(--accent);
+  }
+
+  /* Navegação de categorias — chips horizontais fixos */
+  .categoria-nav {
+    display: flex; gap: 8px;
+    overflow-x: auto;
+    padding: 12px 1rem;
+    background: var(--bg);
+    position: sticky; top: 0; z-index: 40;
+    border-bottom: 1px solid var(--border);
+  }
+  .categoria-nav::-webkit-scrollbar { display: none; }
+  .categoria-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 15px;
+    border-radius: 999px;
+    font-size: 0.8rem; font-weight: 700;
+    white-space: nowrap; cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .categoria-chip:hover { border-color: var(--border-strong); color: var(--text); }
+  .categoria-chip.active {
+    background: var(--accent); color: var(--on-accent); border-color: var(--accent);
   }
 
   /* Container & categorias */
-  .container { max-width: 720px; margin: 1.5rem auto; padding: 0 1rem; }
+  .container { max-width: 720px; margin: 0.5rem auto 0; padding: 0 1rem; }
   .categoria-titulo {
-    color: #003D5B;
-    font-size: 1.3rem;
-    font-weight: 900;
-    margin: 1.5rem 0 0.8rem;
-    padding-bottom: 0.4rem;
-    border-bottom: 3px solid #FF8C42;
-    letter-spacing: 0.05em;
-    display: flex; align-items: center; gap: 0.5rem;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 1.8rem 0 0.9rem;
+    scroll-margin-top: 64px;
   }
-  .categoria-titulo::before {
-    content: '🌊';
-    font-size: 1.4rem;
-  }
+  .categoria-titulo::before { content: none; }
 
   /* Cards */
   .produto-card {
-    background: white;
-    border-radius: 14px;
-    padding: 0.9rem;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: 0.85rem;
     margin-bottom: 0.7rem;
     display: flex; align-items: center; gap: 0.9rem;
-    box-shadow: 0 2px 12px rgba(42,27,92,0.08);
-    border-left: 4px solid #FF8C42;
-    transition: transform 0.2s;
+    border: 1px solid var(--border);
+    transition: border-color 0.15s, transform 0.15s;
     animation: fadeUp 0.4s ease backwards;
   }
-  .produto-card:hover { transform: translateX(3px); }
-  .produto-card.inativo { opacity: 0.45; }
+  .produto-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+  .produto-card.inativo { opacity: 0.4; }
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
   .produto-img, .produto-img-placeholder {
-    width: 70px; height: 70px;
-    border-radius: 12px;
+    width: 84px; height: 84px;
+    border-radius: var(--radius-sm);
     flex-shrink: 0;
     object-fit: cover;
   }
   .produto-img-placeholder {
-    background: linear-gradient(135deg, #FF8C42, #FF8C42);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    font-size: 2rem;
+    font-size: 2.1rem;
   }
   .produto-info { flex: 1; min-width: 0; }
   .produto-nome {
-    font-weight: 700;
-    font-size: 1rem;
-    color: #003D5B;
-    margin-bottom: 2px;
+    font-weight: 800;
+    font-size: 0.98rem;
+    color: var(--text);
+    margin-bottom: 3px;
+    letter-spacing: 0.01em;
   }
   .produto-comp {
-    font-size: 0.82rem;
-    color: #666;
-    line-height: 1.3;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.35;
   }
   .produto-comp-principal {
-    color: #003D5B;
+    color: var(--text);
     font-weight: 600;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
   }
   .produto-comp-pt {
-    color: #999;
-    font-size: 0.75rem;
+    color: var(--text-faint);
+    font-size: 0.73rem;
     font-style: italic;
     margin-top: 2px;
   }
   .esgotado {
     display: inline-block;
-    background: #d32f2f; color: white;
+    background: var(--danger-soft); color: var(--danger);
     padding: 2px 8px; border-radius: 10px;
-    font-size: 0.7rem; font-weight: bold;
+    font-size: 0.68rem; font-weight: 700;
     margin-top: 4px;
+    text-transform: uppercase; letter-spacing: 0.03em;
   }
   .produto-preco {
-    font-size: 1.05rem;
-    font-weight: 900;
-    color: #003D5B;
-    background: #FF8C42;
-    padding: 4px 10px; border-radius: 8px;
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: var(--accent-2);
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
   }
 
   /* Toggle admin */
@@ -205,7 +236,7 @@
   .toggle-slider {
     position: absolute; cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: #ccc; transition: .3s; border-radius: 24px;
+    background: var(--border-strong); transition: .3s; border-radius: 24px;
   }
   .toggle-slider::before {
     position: absolute; content: "";
@@ -213,7 +244,7 @@
     left: 3px; bottom: 3px;
     background: white; transition: .3s; border-radius: 50%;
   }
-  .toggle input:checked + .toggle-slider { background: #4CAF50; }
+  .toggle input:checked + .toggle-slider { background: var(--success); }
   .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
 
   /* Carrinho/Pedido */
@@ -225,44 +256,43 @@
     gap: 10px;
     z-index: 50;
   }
-  .btn-pedido-container.show { display: flex; animation: pulse 1.5s infinite; }
+  .btn-pedido-container.show { display: flex; animation: pulse 1.8s infinite; }
 
-  /* Botão flutuante "Meus pedidos hoje" (F4) */
   .btn-meus-pedidos {
     position: fixed;
     bottom: 20px; left: 20px;
-    background: white;
-    color: #003D5B;
-    border: 2px solid #003D5B;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
     padding: 10px 18px;
     border-radius: 50px;
-    font-weight: bold;
-    font-size: 0.9rem;
+    font-weight: 700;
+    font-size: 0.87rem;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(0,61,91,0.25);
+    box-shadow: var(--shadow-md);
     z-index: 49;
     display: flex;
     align-items: center;
     gap: 8px;
+    font-family: inherit;
   }
-  .btn-meus-pedidos:hover { background: #F5FAFE; }
+  .btn-meus-pedidos:hover { border-color: var(--accent); }
   .btn-meus-pedidos .badge-num {
-    background: #FF8C42;
-    color: #003D5B;
+    background: var(--accent);
+    color: var(--on-accent);
     padding: 2px 8px;
     border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 900;
+    font-size: 0.78rem;
+    font-weight: 800;
     min-width: 22px;
     text-align: center;
   }
 
-  /* Card de pedido individual no modal Meus Pedidos */
   .meu-pedido-card {
-    background: #F5FAFE;
-    border-left: 3px solid #FF8C42;
-    border-radius: 8px;
-    padding: 0.7rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
     margin-bottom: 0.6rem;
     font-size: 0.9rem;
   }
@@ -270,80 +300,85 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.4rem;
-    padding-bottom: 0.3rem;
-    border-bottom: 1px dashed #ccc;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dashed var(--border-strong);
   }
   .meu-pedido-status {
-    font-size: 0.75rem;
-    padding: 2px 8px;
+    font-size: 0.72rem;
+    padding: 2px 9px;
     border-radius: 8px;
-    font-weight: bold;
+    font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.03em;
   }
-  .meu-pedido-status.aguardando { background: #FFF3E0; color: #F39C12; }
-  .meu-pedido-status.novo, .meu-pedido-status.entregue { background: #E8F5E9; color: #2E7D32; }
-  .meu-pedido-status.cancelado { background: #FFEBEE; color: #C0392B; }
+  .meu-pedido-status.aguardando { background: var(--warning-soft); color: var(--warning); }
+  .meu-pedido-status.novo, .meu-pedido-status.entregue { background: var(--success-soft); color: var(--success); }
+  .meu-pedido-status.cancelado { background: var(--danger-soft); color: var(--danger); }
   .btn-limpar {
-    background: #FFFFFF;
-    color: #C0392B;
-    border: 2px solid #C0392B;
+    background: var(--surface);
+    color: var(--danger);
+    border: 1.5px solid var(--danger);
     width: 48px; height: 48px;
     border-radius: 50%;
     font-size: 1.2rem;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(192,57,43,0.3);
+    box-shadow: var(--shadow-md);
     transition: transform 0.15s, background 0.15s, color 0.15s;
   }
-  .btn-limpar:hover { transform: scale(1.1); background: #C0392B; color: white; }
+  .btn-limpar:hover { transform: scale(1.08); background: var(--danger); color: white; }
   .btn-pedido {
-    background: #FF8C42; color: #003D5B;
-    border: 3px solid #003D5B;
+    background: var(--accent); color: var(--on-accent);
+    border: none;
     padding: 14px 22px;
     border-radius: 50px;
-    font-weight: 900; font-size: 1rem;
+    font-weight: 800; font-size: 0.98rem;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,61,91,0.4);
+    box-shadow: var(--shadow-lg);
+    font-family: inherit;
   }
   @keyframes pulse {
     0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+    50% { transform: scale(1.04); }
   }
   .qtd-btn {
-    background: #003D5B; color: #FF8C42;
-    border: none; width: 28px; height: 28px;
-    border-radius: 50%; font-weight: bold; font-size: 1rem;
-    cursor: pointer;
+    background: var(--accent); color: var(--on-accent);
+    border: none; width: 30px; height: 30px;
+    border-radius: 50%; font-weight: 800; font-size: 1.05rem;
+    cursor: pointer; box-shadow: 0 4px 10px -2px rgba(255,122,31,0.5);
   }
   .qtd-display {
-    display: inline-block; min-width: 24px;
-    text-align: center; font-weight: bold;
-    color: #003D5B;
+    display: inline-block; min-width: 22px;
+    text-align: center; font-weight: 800;
+    color: var(--text);
   }
 
   /* Modal pedido */
   .modal-overlay {
     display: none;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.75);
     z-index: 200;
     align-items: center; justify-content: center;
     padding: 1rem;
   }
   .modal-overlay.show { display: flex; }
   .modal-pedido {
-    background: white;
-    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     max-width: 420px; width: 100%;
     max-height: 85vh; overflow-y: auto;
     padding: 1.5rem;
+    box-shadow: var(--shadow-lg);
   }
   .modal-pedido h2 {
-    color: #003D5B;
-    border-bottom: 3px solid #FF8C42;
-    padding-bottom: 0.5rem; margin-bottom: 1rem;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.7rem; margin-bottom: 1rem;
+    font-size: 1.1rem; font-weight: 800;
   }
   .item-pedido {
     display: flex; justify-content: space-between;
-    padding: 0.5rem 0; border-bottom: 1px solid #eee;
+    padding: 0.5rem 0; border-bottom: 1px solid var(--border);
     font-size: 0.9rem;
   }
   .item-pedido-completo {
@@ -352,17 +387,15 @@
     grid-template-rows: auto auto;
     gap: 6px 12px;
     padding: 0.7rem 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
     align-items: center;
   }
   .item-info { grid-column: 1; grid-row: 1; }
-  .item-nome { font-weight: 700; color: #003D5B; font-size: 0.95rem; }
-  .item-preco-unit { font-size: 0.75rem; color: #888; margin-top: 2px; }
+  .item-nome { font-weight: 700; color: var(--text); font-size: 0.95rem; }
+  .item-preco-unit { font-size: 0.75rem; color: var(--text-faint); margin-top: 2px; }
   .item-subtotal {
     grid-column: 2; grid-row: 1;
-    font-weight: 900; color: #003D5B;
-    background: #FF8C42;
-    padding: 4px 10px; border-radius: 6px;
+    font-weight: 800; color: var(--accent-2);
     font-size: 0.95rem; white-space: nowrap;
   }
   .item-controles {
@@ -371,20 +404,20 @@
     padding-top: 4px;
   }
   .qtd-btn-modal {
-    background: #003D5B; color: #FF8C42;
-    border: none; width: 28px; height: 28px;
-    border-radius: 50%; font-weight: bold; font-size: 1rem;
+    background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--border-strong); width: 28px; height: 28px;
+    border-radius: 50%; font-weight: 800; font-size: 1rem;
     cursor: pointer; transition: transform 0.1s;
   }
-  .qtd-btn-modal:hover { transform: scale(1.1); }
+  .qtd-btn-modal:hover { transform: scale(1.1); border-color: var(--accent); }
   .qtd-display-modal {
     display: inline-block; min-width: 30px;
-    text-align: center; font-weight: bold;
-    color: #003D5B; font-size: 1rem;
+    text-align: center; font-weight: 800;
+    color: var(--text); font-size: 1rem;
   }
   .btn-excluir-item {
-    background: transparent; color: #C0392B;
-    border: 1px solid #C0392B;
+    background: transparent; color: var(--danger);
+    border: 1px solid var(--danger);
     width: 32px; height: 28px;
     border-radius: 6px;
     cursor: pointer;
@@ -392,47 +425,51 @@
     margin-left: auto;
     transition: background 0.15s, color 0.15s;
   }
-  .btn-excluir-item:hover { background: #C0392B; color: white; }
+  .btn-excluir-item:hover { background: var(--danger); color: white; }
   .total-pedido {
-    font-size: 1.2rem; font-weight: 900;
-    color: #003D5B; text-align: right;
+    font-size: 1.2rem; font-weight: 800;
+    color: var(--text); text-align: right;
     margin-top: 1rem; padding-top: 0.8rem;
-    border-top: 2px solid #FF8C42;
+    border-top: 1px solid var(--border);
   }
   .modal-pedido input {
-    width: 100%; padding: 10px;
-    border: 2px solid #003D5B;
-    border-radius: 8px; margin: 8px 0;
-    font-size: 1rem;
+    width: 100%; padding: 10px 12px;
+    border: 1.5px solid var(--border-strong);
+    background: var(--surface-2); color: var(--text);
+    border-radius: var(--radius-sm); margin: 8px 0;
+    font-size: 1rem; font-family: inherit;
+  }
+  .modal-pedido input:focus {
+    outline: none; border-color: var(--accent);
   }
   .modal-pedido label {
     display: block; margin-top: 0.8rem;
-    font-weight: bold; color: #003D5B;
-    font-size: 0.9rem;
+    font-weight: 700; color: var(--text-muted);
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em;
   }
   .modal-btns { display: flex; gap: 8px; margin-top: 1rem; }
   .btn-confirmar, .btn-cancelar {
     flex: 1; padding: 12px;
-    border: none; border-radius: 8px;
-    font-weight: bold; cursor: pointer;
-    font-size: 0.95rem;
+    border: none; border-radius: var(--radius-sm);
+    font-weight: 700; cursor: pointer;
+    font-size: 0.95rem; font-family: inherit;
   }
-  .btn-confirmar { background: #FF8C42; color: #003D5B; }
-  .btn-cancelar { background: #ccc; color: #333; }
+  .btn-confirmar { background: var(--accent); color: var(--on-accent); }
+  .btn-cancelar { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border-strong); }
 
   footer {
     text-align: center;
-    padding: 1.5rem 1rem;
-    color: #003D5B;
+    padding: 1.8rem 1rem;
+    color: var(--text-faint);
     font-size: 0.85rem;
     margin-top: 2rem;
-    border-top: 2px solid #FF8C42;
+    border-top: 1px solid var(--border);
   }
-  footer strong { color: #003D5B; font-size: 1rem; }
+  footer strong { color: var(--text); font-size: 1rem; }
   .pix-info {
     margin-top: 0.5rem;
     font-size: 0.8rem;
-    color: #666;
+    color: var(--text-faint);
   }
 </style>
 </head>
@@ -445,11 +482,13 @@
 </div>
 
 <header>
-  <div class="header-logo"><span style="font-size:5rem;line-height:1;">🌊</span></div>
-  <div class="header-titulo">IS TECNOLOGIA</div>
-  <div class="header-numero">— 77 —</div>
-  <div class="header-slogan">Onde a praia encontra a tecnologia 🌊💻</div>
-  <div class="header-endereco">Barraca 77 — Ambiente de testes</div>
+  <div class="header-top">
+    <div class="header-logo">🌊</div>
+    <div class="header-titulos">
+      <div class="header-titulo">IS TECNOLOGIA <span class="num">77</span></div>
+      <div class="header-slogan">Onde a praia encontra a tecnologia</div>
+    </div>
+  </div>
   <div class="lang-bar">
     <button class="lang-btn active" onclick="setLang('pt')">🇧🇷 PT</button>
     <button class="lang-btn" onclick="setLang('en')">🇺🇸 EN</button>
@@ -461,6 +500,8 @@
     <button class="lang-btn" onclick="setLang('ja')">🇯🇵 JA</button>
   </div>
 </header>
+
+<div class="categoria-nav" id="categoriaNav"></div>
 
 <div class="container" id="cardapio"></div>
 
@@ -1434,15 +1475,38 @@ function assinarMeusPedidos() {
 }
 assinarMeusPedidos();
 
+function slugCategoria(categoria) {
+  const semAcentos = categoria.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return 'cat-' + semAcentos.replace(/[^a-z0-9]+/g, '-');
+}
+
+function renderCategoriaNav() {
+  const nav = document.getElementById('categoriaNav');
+  if (!nav) return;
+  const categoriasComItens = ordemCategorias.filter(categoria => produtos.some(p => p.categoria === categoria));
+  nav.innerHTML = categoriasComItens.map((categoria, i) => `
+    <button class="categoria-chip ${i === 0 ? 'active' : ''}" data-cat="${slugCategoria(categoria)}" onclick="irParaCategoria('${slugCategoria(categoria)}', this)">${categoria}</button>
+  `).join('');
+}
+
+function irParaCategoria(slug, btn) {
+  document.querySelectorAll('.categoria-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  const alvo = document.getElementById(slug);
+  if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function render() {
   const el = document.getElementById('cardapio');
   el.innerHTML = '';
+  renderCategoriaNav();
 
   ordemCategorias.forEach((categoria, ci) => {
     const itens = produtos.filter(p => p.categoria === categoria);
     if (itens.length === 0) return;
 
     const section = document.createElement('div');
+    section.id = slugCategoria(categoria);
     section.innerHTML = `<h2 class="categoria-titulo">${categoria}</h2>`;
 
     itens.forEach((p, i) => {
@@ -1531,6 +1595,7 @@ onValue(ref(db, `${DB_KEY}/bloqueio`), (snapshot) => {
 });
 
 window.setLang = setLang;
+window.irParaCategoria = irParaCategoria;
 window.adicionarPedido = adicionarPedido;
 window.removerPedido = removerPedido;
 window.abrirModalPedido = abrirModalPedido;
