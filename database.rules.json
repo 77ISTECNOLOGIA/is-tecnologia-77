@@ -16,7 +16,14 @@
     "admins": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
-        ".write": false
+        ".write": false,
+
+        "primeiroAcesso": {
+          // Dono confirma que ja definiu e-mail e senha reais (fluxo de
+          // primeiro acesso) - so pode desligar a propria flag, nada mais
+          // neste no (dbKey etc. seguem exclusivos do super-admin).
+          ".write": "auth != null && auth.uid === $uid && newData.val() === false"
+        }
       }
     },
 

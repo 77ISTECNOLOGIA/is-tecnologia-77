@@ -86,6 +86,15 @@
     font-size: 0.83rem; color: var(--ink-soft);
     margin-top: 0.3rem; position: relative;
   }
+  .header-logout-btn {
+    position: absolute; top: 14px; right: 14px;
+    display: flex; align-items: center; gap: 5px;
+    background: var(--surface); border: 1.5px solid var(--border);
+    color: var(--ink-soft); font-family: var(--font-body); font-weight: 600;
+    font-size: 0.78rem; padding: 7px 12px; border-radius: var(--radius-sm);
+    cursor: pointer; transition: border-color 0.12s, color 0.12s;
+  }
+  .header-logout-btn:hover { border-color: var(--danger); color: var(--danger); }
 
   .tabs {
     display: flex; gap: 4px;
@@ -785,7 +794,18 @@
   .tela-login-admin input {
     width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
     margin-bottom: 14px; font-size: 1rem; font-family: var(--font-body); color: var(--ink);
+    background: var(--surface-2);
     transition: border-color 0.12s, box-shadow 0.12s;
+  }
+  .tela-login-admin .link-secundario {
+    text-align: center; margin-top: 14px; font-size: 0.85rem;
+  }
+  .tela-login-admin .link-secundario a {
+    color: var(--accent-2); text-decoration: none; font-weight: 600;
+  }
+  .tela-login-admin .link-secundario a:hover { text-decoration: underline; }
+  .tela-login-admin .sucesso {
+    color: var(--success); font-size: 0.85rem; margin: 4px 0 8px; display: none;
   }
   .tela-login-admin input:focus {
     outline: none; border-color: var(--accent-2);
@@ -817,10 +837,46 @@
       <p class="erro" id="loginErro"></p>
       <button type="submit" id="btnLoginAdmin">Entrar</button>
     </form>
+    <p class="link-secundario"><a href="#" id="linkEsqueciSenha">Esqueci minha senha</a></p>
+  </div>
+</div>
+
+<!-- 🔑 Recuperação de senha -->
+<div class="tela-login-admin" id="telaRecuperarSenha" style="display:none;">
+  <div class="caixa">
+    <div class="icone">🔑</div>
+    <h1>Recuperar senha</h1>
+    <form id="formRecuperarSenha">
+      <label for="recuperarEmail">E-mail cadastrado</label>
+      <input type="email" id="recuperarEmail" required autocomplete="username">
+      <p class="erro" id="recuperarErro"></p>
+      <p class="sucesso" id="recuperarSucesso"></p>
+      <button type="submit" id="btnRecuperarSenha">Enviar link de redefinição</button>
+    </form>
+    <p class="link-secundario"><a href="#" id="linkVoltarLogin">Voltar ao login</a></p>
+  </div>
+</div>
+
+<!-- 👋 Primeiro acesso: dono define e-mail e senha reais -->
+<div class="tela-login-admin" id="telaPrimeiroAcesso" style="display:none;">
+  <div class="caixa">
+    <div class="icone">👋</div>
+    <h1>Complete seu cadastro</h1>
+    <form id="formPrimeiroAcesso">
+      <label for="paSenhaAtual">Senha atual (a que você recebeu)</label>
+      <input type="password" id="paSenhaAtual" required autocomplete="current-password">
+      <label for="paNovoEmail">Seu e-mail</label>
+      <input type="email" id="paNovoEmail" required autocomplete="username">
+      <label for="paNovaSenha">Crie sua nova senha</label>
+      <input type="password" id="paNovaSenha" required autocomplete="new-password" minlength="6">
+      <p class="erro" id="paErro"></p>
+      <button type="submit" id="btnPrimeiroAcesso">Salvar e continuar</button>
+    </form>
   </div>
 </div>
 
 <header>
+  <button class="header-logout-btn" id="btnLogoutAdmin" title="Sair da conta">↩ Sair</button>
   <div class="header-inner">
     <img src="" alt="IS Tecnologia 77" class="header-badge" style="object-fit:cover;">
     <h1>IS TECNOLOGIA 77</h1>
@@ -1029,7 +1085,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, get, onValue, set, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAX6X6ZX__HxwamgN4wcx8p1jgoQUEWtjE",
@@ -1050,10 +1106,56 @@ const DB_KEY = 'is-tecnologia-77';
 // restante do painel até confirmar que a conta logada pertence a esta barraca
 // (checagem via nó admins/{uid}.dbKey, criado junto com o usuário).
 async function exigirLoginAdmin() {
-  const overlay   = document.getElementById('telaLoginAdmin');
-  const form      = document.getElementById('formLoginAdmin');
-  const erroEl    = document.getElementById('loginErro');
-  const btn       = document.getElementById('btnLoginAdmin');
+  const overlay      = document.getElementById('telaLoginAdmin');
+  const form          = document.getElementById('formLoginAdmin');
+  const erroEl        = document.getElementById('loginErro');
+  const btn           = document.getElementById('btnLoginAdmin');
+
+  const telaRecuperar   = document.getElementById('telaRecuperarSenha');
+  const formRecuperar   = document.getElementById('formRecuperarSenha');
+  const recuperarErroEl = document.getElementById('recuperarErro');
+  const recuperarSucessoEl = document.getElementById('recuperarSucesso');
+  const btnRecuperar    = document.getElementById('btnRecuperarSenha');
+
+  const telaPrimeiroAcesso = document.getElementById('telaPrimeiroAcesso');
+  const formPrimeiroAcesso = document.getElementById('formPrimeiroAcesso');
+  const paErroEl           = document.getElementById('paErro');
+  const btnPrimeiroAcesso  = document.getElementById('btnPrimeiroAcesso');
+
+  document.getElementById('linkEsqueciSenha').addEventListener('click', (e) => {
+    e.preventDefault();
+    overlay.classList.add('hide');
+    telaRecuperar.style.display = 'flex';
+  });
+  document.getElementById('linkVoltarLogin').addEventListener('click', (e) => {
+    e.preventDefault();
+    telaRecuperar.style.display = 'none';
+    overlay.classList.remove('hide');
+  });
+  formRecuperar.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    recuperarErroEl.style.display = 'none';
+    recuperarSucessoEl.style.display = 'none';
+    btnRecuperar.disabled = true;
+    btnRecuperar.textContent = 'Enviando...';
+    const email = document.getElementById('recuperarEmail').value.trim();
+    try {
+      await sendPasswordResetEmail(authInst, email);
+      recuperarSucessoEl.textContent = 'Se esse e-mail estiver cadastrado, enviamos um link de redefinição. Verifique também a caixa de spam.';
+      recuperarSucessoEl.style.display = 'block';
+    } catch (err) {
+      recuperarErroEl.textContent = 'Não foi possível enviar o link: ' + err.message;
+      recuperarErroEl.style.display = 'block';
+    } finally {
+      btnRecuperar.disabled = false;
+      btnRecuperar.textContent = 'Enviar link de redefinição';
+    }
+  });
+
+  document.getElementById('btnLogoutAdmin').addEventListener('click', async () => {
+    await signOut(authInst);
+    location.reload();
+  });
 
   return new Promise((resolve) => {
     let liberado = false;
@@ -1063,6 +1165,38 @@ async function exigirLoginAdmin() {
       try {
         const snap = await get(ref(db, `admins/${user.uid}`));
         if (snap.exists() && snap.val().dbKey === DB_KEY) {
+          if (snap.val().primeiroAcesso === true) {
+            overlay.classList.add('hide');
+            telaRecuperar.style.display = 'none';
+            telaPrimeiroAcesso.style.display = 'flex';
+
+            formPrimeiroAcesso.onsubmit = async (e) => {
+              e.preventDefault();
+              paErroEl.style.display = 'none';
+              btnPrimeiroAcesso.disabled = true;
+              btnPrimeiroAcesso.textContent = 'Salvando...';
+              const senhaAtual = document.getElementById('paSenhaAtual').value;
+              const novoEmail  = document.getElementById('paNovoEmail').value.trim();
+              const novaSenha  = document.getElementById('paNovaSenha').value;
+              try {
+                const cred = EmailAuthProvider.credential(user.email, senhaAtual);
+                await reauthenticateWithCredential(user, cred);
+                await updateEmail(user, novoEmail);
+                await updatePassword(user, novaSenha);
+                await update(ref(db, `admins/${user.uid}`), { primeiroAcesso: false });
+                liberado = true;
+                telaPrimeiroAcesso.style.display = 'none';
+                resolve();
+              } catch (err) {
+                paErroEl.textContent = 'Erro: ' + err.message;
+                paErroEl.style.display = 'block';
+              } finally {
+                btnPrimeiroAcesso.disabled = false;
+                btnPrimeiroAcesso.textContent = 'Salvar e continuar';
+              }
+            };
+            return;
+          }
           liberado = true;
           overlay.classList.add('hide');
           resolve();
