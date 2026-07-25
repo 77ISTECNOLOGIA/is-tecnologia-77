@@ -6,42 +6,43 @@
 <title>Painel Admin — IS Tecnologia 77</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Identidade da marca (IS Tecnologia 77) */
-    --accent: #003D5B;
-    --accent-2: #E67635;
-    --accent-soft: #FDEEE3;
-    --on-accent: #FFAB70;
+    /* Identidade da marca (IS Tecnologia 77) — tema escuro, piloto */
+    --accent: #FF7A1F;
+    --accent-2: #FFA85C;
+    --accent-soft: rgba(255,122,31,0.15);
+    --on-accent: #16171B;
 
-    /* Neutros — leve frieza azulada, não cinza puro */
-    --ink: #1D2333;
-    --ink-soft: #5B6072;
-    --ink-faint: #8A8FA3;
-    --surface: #FFFFFF;
-    --surface-sunken: #F5F6FA;
-    --border: #E3E5EF;
-    --border-soft: #EDEEF5;
+    /* Neutros — quase preto, texto quase branco */
+    --ink: #F5F6F8;
+    --ink-soft: #9BA1AE;
+    --ink-faint: #6B7280;
+    --surface: #1D1F24;
+    --surface-2: #26282F;
+    --surface-sunken: #131417;
+    --border: #2A2D35;
+    --border-soft: #23262C;
 
     /* Semântico */
-    --success: #1B8354;
-    --success-soft: #E4F5EC;
-    --warning: #B5740E;
-    --warning-soft: #FCF0DC;
-    --danger: #C13A2E;
-    --danger-soft: #FBE7E4;
-    --neutral-chip: #6B7086;
-    --neutral-chip-soft: #EEEFF4;
+    --success: #4CBB7D;
+    --success-soft: rgba(76,187,125,0.15);
+    --warning: #E0A93E;
+    --warning-soft: rgba(224,169,62,0.15);
+    --danger: #E5564A;
+    --danger-soft: rgba(229,86,74,0.15);
+    --neutral-chip: #8A8FA3;
+    --neutral-chip-soft: rgba(255,255,255,0.08);
 
     --radius-sm: 8px;
     --radius-md: 14px;
     --radius-lg: 20px;
-    --shadow-sm: 0 1px 2px rgba(29,35,51,0.06);
-    --shadow-md: 0 6px 20px -6px rgba(29,35,51,0.16), 0 1px 2px rgba(29,35,51,0.05);
-    --shadow-lg: 0 20px 44px -12px rgba(29,35,51,0.26);
-    --font-display: 'Fraunces', Georgia, serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 10px 28px -8px rgba(0,0,0,0.5);
+    --shadow-lg: 0 24px 50px -14px rgba(0,0,0,0.6);
+    --font-display: 'Manrope', -apple-system, sans-serif;
+    --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -57,39 +58,33 @@
   .tabular { font-variant-numeric: tabular-nums; }
 
   header {
-    background: linear-gradient(160deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 55%, black) 100%);
-    padding: 1.9rem 1.25rem 1.6rem;
+    background: #0D0E10;
+    padding: 1.6rem 1.25rem 1.3rem;
     text-align: center;
-    color: white;
+    color: var(--ink);
     position: relative;
     overflow: hidden;
-  }
-  header::after {
-    content: "";
-    position: absolute; inset: 0;
-    background: radial-gradient(120% 100% at 50% -20%, rgba(255,255,255,0.14), transparent 60%);
-    pointer-events: none;
+    border-bottom: 1px solid var(--border);
   }
   header .header-inner {
     display: flex; align-items: center; justify-content: center;
     gap: 14px; flex-wrap: wrap; position: relative;
   }
   header .header-badge {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--on-accent) 0%, var(--accent-2) 100%);
-    border: 2px solid rgba(255,255,255,0.5);
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--accent-soft);
+    border: 1.5px solid var(--accent);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.4rem; line-height: 1; flex-shrink: 0;
-    box-shadow: var(--shadow-sm);
   }
   header h1 {
-    color: var(--on-accent);
-    font-size: 1.35rem; font-weight: 700;
+    color: var(--ink);
+    font-size: 1.3rem; font-weight: 800;
     letter-spacing: 0.01em; margin: 0;
   }
   header p {
-    font-size: 0.85rem; color: rgba(255,255,255,0.78);
-    margin-top: 0.35rem; position: relative;
+    font-size: 0.83rem; color: var(--ink-soft);
+    margin-top: 0.3rem; position: relative;
   }
 
   .tabs {
@@ -625,7 +620,7 @@
     opacity: 0.9;
   }
   .trial-banner .trial-cta {
-    background: white;
+    background: var(--surface-2);
     color: inherit;
     border: none;
     padding: 9px 14px;
@@ -656,18 +651,18 @@
   .trial-banner .trial-fechar:hover { opacity: 1; }
 
   .trial-banner.normal {
-    background: linear-gradient(90deg, var(--success-soft), #D8EEE1);
-    color: #145C3C;
+    background: var(--success-soft);
+    color: var(--success);
     border-left: 3px solid var(--success);
   }
   .trial-banner.alerta {
-    background: linear-gradient(90deg, var(--warning-soft), #F8E3C5);
-    color: #8A5A0A;
+    background: var(--warning-soft);
+    color: var(--warning);
     border-left: 3px solid var(--warning);
   }
   .trial-banner.urgente {
-    background: linear-gradient(90deg, var(--danger-soft), #F5D3CE);
-    color: #8C281E;
+    background: var(--danger-soft);
+    color: var(--danger);
     border-left: 3px solid var(--danger);
     animation: trial-pulsar 2.2s infinite;
   }
@@ -677,7 +672,7 @@
     border-left: 3px solid #7F241C;
   }
   .trial-banner.vencido .trial-cta {
-    background: white;
+    background: var(--surface);
     color: var(--danger);
   }
   @keyframes trial-pulsar {
@@ -701,21 +696,20 @@
   .tela-bloqueio-admin {
     display: none;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(160deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 55%, black) 100%);
+    background: #0D0E10;
     z-index: 99999;
     align-items: center; justify-content: center;
     padding: 2rem 1.5rem;
     text-align: center;
-    color: white;
+    color: var(--ink);
   }
   .tela-bloqueio-admin.show { display: flex; }
   .tela-bloqueio-admin .conteudo {
     max-width: 480px;
-    background: rgba(255,255,255,0.07);
-    backdrop-filter: blur(14px);
+    background: var(--surface);
     border-radius: var(--radius-lg);
     padding: 2.6rem 1.9rem;
-    border: 1px solid rgba(255,255,255,0.16);
+    border: 1px solid var(--border);
     box-shadow: var(--shadow-lg);
   }
   .tela-bloqueio-admin .icone {
@@ -724,14 +718,14 @@
     display: block;
   }
   .tela-bloqueio-admin h2 {
-    color: var(--on-accent);
+    color: var(--accent);
     font-size: 1.4rem;
     margin: 0 0 1rem;
     line-height: 1.3;
   }
   .tela-bloqueio-admin p {
     font-size: 0.95rem;
-    opacity: 0.9;
+    color: var(--ink-soft);
     line-height: 1.55;
     margin: 0 0 1.6rem;
     font-family: var(--font-body);
@@ -760,7 +754,7 @@
   /* Tela de login do admin (Firebase Authentication) */
   .tela-login-admin {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(160deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 55%, black) 100%);
+    background: #0D0E10;
     z-index: 999999;
     display: flex;
     align-items: center; justify-content: center;
@@ -856,7 +850,7 @@
   <div class="secao active" id="secao-produtos">
     <div class="caixa-ordem">
       <h3>📌 Ordem das categorias no cardápio</h3>
-      <p style="font-size:0.8rem;color:#666;margin-bottom:8px;">Arraste para reordenar:</p>
+      <p style="font-size:0.8rem;color:var(--ink-soft);margin-bottom:8px;">Arraste para reordenar:</p>
       <ul class="lista-ordem" id="listaOrdem"></ul>
       <button class="btn-salvar-ordem" onclick="salvarOrdem()">Salvar ordem</button>
     </div>
@@ -872,7 +866,7 @@
 
     <!-- Barra de busca (S3) -->
     <div style="margin-bottom:0.8rem; position:relative;">
-      <input type="text" id="buscaPedidos" placeholder="🔍 Buscar por cadeira, nome ou produto..." style="width:100%; padding:10px 14px; border:2px solid #003D5B; border-radius:8px; font-size:0.95rem; background:white;">
+      <input type="text" id="buscaPedidos" placeholder="🔍 Buscar por cadeira, nome ou produto..." style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:0.95rem; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);">
     </div>
 
     <!-- Sub-abas (S1) -->
@@ -908,35 +902,35 @@
   <!-- ⚙️ CONFIGURAÇÕES (Aba nova - autonomia da barraqueira) -->
   <div class="secao" id="secao-config">
     <h3 class="titulo-secao">⚙️ Configurações da barraca</h3>
-    <p style="color:#666; font-size:0.85rem; margin-bottom:1.2rem;">Aqui você pode editar as informações da sua barraca. As alterações são aplicadas automaticamente no cardápio digital.</p>
+    <p style="color:var(--ink-soft); font-size:0.85rem; margin-bottom:1.2rem;">Aqui você pode editar as informações da sua barraca. As alterações são aplicadas automaticamente no cardápio digital.</p>
 
     <div class="caixa-ordem" style="margin-bottom:1rem;">
       <h3>📱 WhatsApp para receber pedidos</h3>
-      <p style="color:#666; font-size:0.82rem; margin-bottom:0.6rem; line-height:1.4;">
+      <p style="color:var(--ink-soft); font-size:0.82rem; margin-bottom:0.6rem; line-height:1.4;">
         Número que receberá os pedidos enviados pelos clientes. Use formato internacional, sem espaços ou hífens.<br>
         <strong>Exemplo:</strong> 5521993109310 (55 = Brasil + 21 = DDD + número)
       </p>
       <input type="text" id="inputConfigWhatsapp" placeholder="5521993109310"
-        style="width:100%; padding:10px; border:2px solid #003D5B; border-radius:8px; font-size:1rem; font-family:monospace; margin-bottom:0.5rem;">
+        style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; font-size:1rem; font-family:monospace; margin-bottom:0.5rem; background:var(--surface-2); color:var(--ink);">
       <button onclick="salvarWhatsapp()" class="btn btn-primary btn-block">💾 Salvar WhatsApp</button>
       <div id="msgConfigWhatsapp" style="margin-top:6px; font-size:0.85rem;"></div>
     </div>
 
     <div class="caixa-ordem" style="margin-bottom:1rem;">
       <h3>🔒 Senha de cancelamento</h3>
-      <p style="color:#666; font-size:0.82rem; margin-bottom:0.6rem; line-height:1.4;">
+      <p style="color:var(--ink-soft); font-size:0.82rem; margin-bottom:0.6rem; line-height:1.4;">
         Senha que os funcionários precisarão informar para cancelar pedidos.<br>
         <strong>Recomendação:</strong> compartilhe apenas com pessoas autorizadas.
       </p>
       <input type="text" id="inputConfigSenha" placeholder="istech77"
-        style="width:100%; padding:10px; border:2px solid #003D5B; border-radius:8px; font-size:1rem; margin-bottom:0.5rem;">
+        style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; font-size:1rem; margin-bottom:0.5rem; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);">
       <button onclick="salvarSenhaCancelamento()" class="btn btn-primary btn-block">💾 Salvar senha</button>
       <div id="msgConfigSenha" style="margin-top:6px; font-size:0.85rem;"></div>
     </div>
 
-    <div class="caixa-ordem" style="background:#F0F8FF; border:1px solid #FF8C42;">
-      <h3 style="color:#FF8C42;">💡 Dicas importantes</h3>
-      <ul style="font-size:0.85rem; color:#666; line-height:1.6; padding-left:1.2rem; margin:0;">
+    <div class="caixa-ordem" style="background:var(--accent-soft); border:1px solid var(--accent);">
+      <h3 style="color:var(--accent);">💡 Dicas importantes</h3>
+      <ul style="font-size:0.85rem; color:var(--ink-soft); line-height:1.6; padding-left:1.2rem; margin:0;">
         <li>O <strong>WhatsApp</strong> precisa estar ativo para receber pedidos</li>
         <li>Se trocar de número, atualize aqui imediatamente</li>
         <li>A <strong>senha</strong> é importante para auditar quem cancelou cada pedido</li>
@@ -948,15 +942,15 @@
 
 <!-- Modal de cancelamento auditado -->
 <div class="modal-overlay" id="modalCancelamento" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; padding:1rem;">
-  <div style="background:white; border-radius:16px; max-width:450px; width:100%; max-height:90vh; overflow-y:auto; padding:1.5rem;">
+  <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); max-width:450px; width:100%; max-height:90vh; overflow-y:auto; padding:1.5rem; box-shadow:var(--shadow-lg);">
     <h2 style="font-family:var(--font-display); color:var(--ink); border-bottom:2px solid var(--danger); padding-bottom:0.5rem; margin-bottom:1rem;">🚫 Cancelar pedido</h2>
-    <p id="cancelamentoInfoPedido" style="background:#FFF3E0; padding:10px; border-radius:8px; font-size:0.9rem; margin-bottom:1rem;"></p>
+    <p id="cancelamentoInfoPedido" style="background:var(--warning-soft); color:var(--ink); padding:10px; border-radius:8px; font-size:0.9rem; margin-bottom:1rem;"></p>
 
-    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:#003D5B; font-size:0.9rem;">Nome do funcionário <span style="color:#C0392B;">*</span></label>
-    <input type="text" id="inputCancelamentoNome" placeholder="Quem está cancelando?" style="width:100%; padding:10px; border:2px solid #003D5B; border-radius:8px; margin:8px 0; font-size:1rem;">
+    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:var(--ink-soft); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.03em;">Nome do funcionário <span style="color:var(--danger);">*</span></label>
+    <input type="text" id="inputCancelamentoNome" placeholder="Quem está cancelando?" style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; margin:8px 0; font-size:1rem; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);">
 
-    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:#003D5B; font-size:0.9rem;">Motivo do cancelamento <span style="color:#C0392B;">*</span></label>
-    <select id="inputCancelamentoMotivo" style="width:100%; padding:10px; border:2px solid #003D5B; border-radius:8px; margin:8px 0; font-size:1rem; background:white;">
+    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:var(--ink-soft); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.03em;">Motivo do cancelamento <span style="color:var(--danger);">*</span></label>
+    <select id="inputCancelamentoMotivo" style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; margin:8px 0; font-size:1rem; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);">
       <option value="">Selecione um motivo...</option>
       <option value="Cliente desistiu">Cliente desistiu</option>
       <option value="Erro no pedido">Erro no pedido</option>
@@ -966,12 +960,12 @@
       <option value="Outros">Outros (descrever)</option>
     </select>
 
-    <textarea id="inputCancelamentoMotivoOutros" placeholder="Descreva o motivo..." style="width:100%; padding:10px; border:2px solid #003D5B; border-radius:8px; margin:8px 0; font-size:0.95rem; display:none; resize:vertical; min-height:60px;"></textarea>
+    <textarea id="inputCancelamentoMotivoOutros" placeholder="Descreva o motivo..." style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; margin:8px 0; font-size:0.95rem; display:none; resize:vertical; min-height:60px; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);"></textarea>
 
-    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:#003D5B; font-size:0.9rem;">Senha de cancelamento <span style="color:#C0392B;">*</span></label>
-    <input type="password" id="inputCancelamentoSenha" placeholder="Senha autorizada pelo gerente" style="width:100%; padding:10px; border:2px solid #003D5B; border-radius:8px; margin:8px 0; font-size:1rem;">
+    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:var(--ink-soft); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.03em;">Senha de cancelamento <span style="color:var(--danger);">*</span></label>
+    <input type="password" id="inputCancelamentoSenha" placeholder="Senha autorizada pelo gerente" style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; margin:8px 0; font-size:1rem; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);">
 
-    <p id="cancelamentoErro" style="color:#C0392B; font-size:0.85rem; margin:0.5rem 0; display:none;"></p>
+    <p id="cancelamentoErro" style="color:var(--danger); font-size:0.85rem; margin:0.5rem 0; display:none;"></p>
 
     <div style="display:flex; gap:8px; margin-top:1rem;">
       <button onclick="fecharModalCancelamento()" class="btn btn-secondary btn-flex">Voltar</button>
@@ -982,10 +976,10 @@
 
 <!-- Modal de Fechar comanda -->
 <div class="modal-overlay" id="modalFecharComanda" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; padding:1rem;">
-  <div style="background:white; border-radius:16px; max-width:450px; width:100%; max-height:90vh; overflow-y:auto; padding:1.5rem;">
+  <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); max-width:450px; width:100%; max-height:90vh; overflow-y:auto; padding:1.5rem; box-shadow:var(--shadow-lg);">
     <h2 style="font-family:var(--font-display); color:var(--ink); border-bottom:2px solid var(--success); padding-bottom:0.5rem; margin-bottom:1rem;">💰 Fechar comanda</h2>
     <div id="fecharComandaResumo"></div>
-    <p style="color:#666; font-size:0.85rem; margin-top:1rem; line-height:1.5;">
+    <p style="color:var(--ink-soft); font-size:0.85rem; margin-top:1rem; line-height:1.5;">
       ⚠️ Após fechar, todos os novos pedidos desta cadeira iniciarão uma <strong>nova comanda</strong>.
     </p>
     <div style="display:flex; gap:8px; margin-top:1rem;">
@@ -997,18 +991,18 @@
 
 <!-- Modal de EXCLUSÃO de comanda (lixeira) -->
 <div class="modal-overlay" id="modalExclusao" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; padding:1rem;">
-  <div style="background:white; border-radius:16px; max-width:450px; width:100%; max-height:90vh; overflow-y:auto; padding:1.5rem;">
+  <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); max-width:450px; width:100%; max-height:90vh; overflow-y:auto; padding:1.5rem; box-shadow:var(--shadow-lg);">
     <h2 style="font-family:var(--font-display); color:var(--ink); border-bottom:2px solid var(--danger); padding-bottom:0.5rem; margin-bottom:1rem;">🗑️ Excluir comanda</h2>
-    <p id="exclusaoInfoComanda" style="background:#FFF3E0; padding:10px; border-radius:8px; font-size:0.9rem; margin-bottom:1rem;"></p>
-    <div style="background:#FFEBEE; border-left:3px solid #C0392B; padding:10px; border-radius:6px; font-size:0.82rem; color:#666; margin-bottom:1rem; line-height:1.5;">
+    <p id="exclusaoInfoComanda" style="background:var(--warning-soft); color:var(--ink); padding:10px; border-radius:8px; font-size:0.9rem; margin-bottom:1rem;"></p>
+    <div style="background:var(--danger-soft); border-left:3px solid var(--danger); padding:10px; border-radius:6px; font-size:0.82rem; color:var(--ink); margin-bottom:1rem; line-height:1.5;">
       ℹ️ <strong>Comanda excluída vai para a "lixeira"</strong> e fica disponível para restauração por <strong>7 dias</strong>. Após esse prazo, é apagada permanentemente.
     </div>
 
-    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:#003D5B; font-size:0.9rem;">Nome do funcionário <span style="color:#C0392B;">*</span></label>
-    <input type="text" id="inputExclusaoNome" placeholder="Quem está excluindo?" style="width:100%; padding:10px; border:2px solid #003D5B; border-radius:8px; margin:8px 0; font-size:1rem;">
+    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:var(--ink-soft); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.03em;">Nome do funcionário <span style="color:var(--danger);">*</span></label>
+    <input type="text" id="inputExclusaoNome" placeholder="Quem está excluindo?" style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; margin:8px 0; font-size:1rem; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);">
 
-    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:#003D5B; font-size:0.9rem;">Motivo da exclusão <span style="color:#C0392B;">*</span></label>
-    <select id="inputExclusaoMotivo" style="width:100%; padding:10px; border:2px solid #003D5B; border-radius:8px; margin:8px 0; font-size:1rem; background:white;">
+    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:var(--ink-soft); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.03em;">Motivo da exclusão <span style="color:var(--danger);">*</span></label>
+    <select id="inputExclusaoMotivo" style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; margin:8px 0; font-size:1rem; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);">
       <option value="">Selecione um motivo...</option>
       <option value="Teste do sistema">Teste do sistema</option>
       <option value="Comanda criada por engano">Comanda criada por engano</option>
@@ -1017,12 +1011,12 @@
       <option value="Outros">Outros (descrever)</option>
     </select>
 
-    <textarea id="inputExclusaoMotivoOutros" placeholder="Descreva o motivo..." style="width:100%; padding:10px; border:2px solid #003D5B; border-radius:8px; margin:8px 0; font-size:0.95rem; display:none; resize:vertical; min-height:60px;"></textarea>
+    <textarea id="inputExclusaoMotivoOutros" placeholder="Descreva o motivo..." style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; margin:8px 0; font-size:0.95rem; display:none; resize:vertical; min-height:60px; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);"></textarea>
 
-    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:#003D5B; font-size:0.9rem;">Senha <span style="color:#C0392B;">*</span></label>
-    <input type="password" id="inputExclusaoSenha" placeholder="Mesma senha de cancelamento" style="width:100%; padding:10px; border:2px solid #003D5B; border-radius:8px; margin:8px 0; font-size:1rem;">
+    <label style="display:block; margin-top:0.8rem; font-weight:bold; color:var(--ink-soft); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.03em;">Senha <span style="color:var(--danger);">*</span></label>
+    <input type="password" id="inputExclusaoSenha" placeholder="Mesma senha de cancelamento" style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; margin:8px 0; font-size:1rem; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);">
 
-    <p id="exclusaoErro" style="color:#C0392B; font-size:0.85rem; margin:0.5rem 0; display:none;"></p>
+    <p id="exclusaoErro" style="color:var(--danger); font-size:0.85rem; margin:0.5rem 0; display:none;"></p>
 
     <div style="display:flex; gap:8px; margin-top:1rem;">
       <button onclick="fecharModalExclusao()" class="btn btn-secondary btn-flex">Voltar</button>
@@ -1192,7 +1186,7 @@ function renderOrdem() {
     const li = document.createElement('li');
     li.draggable = true;
     li.dataset.idx = i;
-    li.innerHTML = `<span>≡ ${cat}</span><span style="font-size:0.8rem;color:#666;">#${i+1}</span>`;
+    li.innerHTML = `<span>≡ ${cat}</span><span style="font-size:0.8rem;color:var(--ink-soft);">#${i+1}</span>`;
     li.ondragstart = e => e.dataTransfer.setData('idx', i);
     li.ondragover = e => e.preventDefault();
     li.ondrop = e => {
@@ -1225,7 +1219,7 @@ function renderProdutos() {
         <label class="toggle"><input type="checkbox" ${p.ativo ? 'checked' : ''} data-idx="${idx}" class="chk-ativo"><span class="toggle-slider"></span></label>
       </div>
       <div class="form-row">
-        <div><label>Categoria</label><select data-campo="categoria" data-idx="${idx}" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:0.9rem;background:white;"><option value=\"Drinks\" ${p.categoria==="Drinks" ? "selected" : ""}>Drinks</option><option value=\"Cervejas\" ${p.categoria==="Cervejas" ? "selected" : ""}>Cervejas</option><option value=\"Sem Álcool\" ${p.categoria==="Sem Álcool" ? "selected" : ""}>Sem Álcool</option><option value=\"Petiscos\" ${p.categoria==="Petiscos" ? "selected" : ""}>Petiscos</option><option value=\"Porções\" ${p.categoria==="Porções" ? "selected" : ""}>Porções</option><option value=\"Sobremesas\" ${p.categoria==="Sobremesas" ? "selected" : ""}>Sobremesas</option></select></div>
+        <div><label>Categoria</label><select data-campo="categoria" data-idx="${idx}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:0.9rem;background:var(--surface-2);color:var(--ink);font-family:var(--font-body);"><option value=\"Drinks\" ${p.categoria==="Drinks" ? "selected" : ""}>Drinks</option><option value=\"Cervejas\" ${p.categoria==="Cervejas" ? "selected" : ""}>Cervejas</option><option value=\"Sem Álcool\" ${p.categoria==="Sem Álcool" ? "selected" : ""}>Sem Álcool</option><option value=\"Petiscos\" ${p.categoria==="Petiscos" ? "selected" : ""}>Petiscos</option><option value=\"Porções\" ${p.categoria==="Porções" ? "selected" : ""}>Porções</option><option value=\"Sobremesas\" ${p.categoria==="Sobremesas" ? "selected" : ""}>Sobremesas</option></select></div>
         <div><label>Preço (R$)</label><input type="number" step="0.01" value="${p.preco}" data-campo="preco" data-idx="${idx}"></div>
       </div>
       <div class="form-row full">
@@ -1390,7 +1384,7 @@ function renderPedidos() {
   document.getElementById('contadorExcluidas').textContent = comandasExcluidas.length;
 
   if (todosPedidos.length === 0) {
-    el.innerHTML = '<p style="text-align:center;color:#666;padding:2rem;">Nenhum pedido ainda 🌞</p>';
+    el.innerHTML = '<p style="text-align:center;color:var(--ink-soft);padding:2rem;">Nenhum pedido ainda 🌞</p>';
     return;
   }
 
@@ -1499,7 +1493,7 @@ function renderSubAbaCancelados(el, cancelados) {
       <div class="cancelado-header">
         <div>
           <span class="cancelado-cadeira-info">🪑 Cadeira ${p.cadeira}</span>
-          <span style="margin-left:8px; color:#666; font-size:0.9rem;">${p.nome}</span>
+          <span style="margin-left:8px; color:var(--ink-soft); font-size:0.9rem;">${p.nome}</span>
         </div>
         <span class="cancelado-valor">R$ ${p.total.toFixed(2).replace('.', ',')}</span>
       </div>
@@ -1525,7 +1519,7 @@ function renderSubAbaCancelados(el, cancelados) {
         </div>` : ''}
       </div>
       <div class="cancelado-itens">
-        <strong style="color:#666;">Itens cancelados:</strong>
+        <strong style="color:var(--ink-soft);">Itens cancelados:</strong>
         ${itensHTML}
       </div>
       <div class="pedido-acoes" style="margin-top:0.6rem;">
@@ -1547,7 +1541,7 @@ function renderSubAbaExcluidas(el, comandasExcluidas) {
   }
 
   // Aviso geral no topo
-  el.innerHTML += `<div style="background:#FFF3E0; border-left:3px solid #FF8C42; padding:10px; border-radius:6px; font-size:0.82rem; color:#666; margin-bottom:1rem; line-height:1.5;">
+  el.innerHTML += `<div style="background:var(--warning-soft); border-left:3px solid var(--warning); padding:10px; border-radius:6px; font-size:0.82rem; color:var(--ink); margin-bottom:1rem; line-height:1.5;">
     💡 <strong>Sobre comandas excluídas:</strong> ficam aqui por 7 dias e podem ser restauradas a qualquer momento. Após esse prazo, são apagadas permanentemente.
   </div>`;
 
@@ -1574,8 +1568,8 @@ function renderSubAbaExcluidas(el, comandasExcluidas) {
         pedidoItens += `<div style="font-size:0.82rem; color:#888; padding:2px 0;">${i.quantidade}× ${i.nome} — R$ ${i.subtotal.toFixed(2).replace('.', ',')}</div>`;
       });
       itensHTML += `
-        <div style="background:#fafafa; padding:8px; border-radius:6px; margin:6px 0; font-size:0.85rem;">
-          <strong style="color:#666;">${formatarDataCompleta(p.timestamp)} — ${p.nome}</strong>
+        <div style="background:var(--surface-2); padding:8px; border-radius:6px; margin:6px 0; font-size:0.85rem;">
+          <strong style="color:var(--ink-soft);">${formatarDataCompleta(p.timestamp)} — ${p.nome}</strong>
           ${pedidoItens}
           <div style="text-align:right; color:#888; margin-top:3px;">R$ ${p.total.toFixed(2).replace('.', ',')}</div>
         </div>
@@ -1590,7 +1584,7 @@ function renderSubAbaExcluidas(el, comandasExcluidas) {
       <div class="cancelado-header" style="border-bottom-style:dashed; border-bottom-color:#999;">
         <div>
           <span class="cancelado-cadeira-info" style="background:#666;">🪑 Cadeira ${c.cadeira}</span>
-          <span style="margin-left:8px; color:#666; font-size:0.85rem;">${numPedidos} pedido${numPedidos > 1 ? 's' : ''}</span>
+          <span style="margin-left:8px; color:var(--ink-soft); font-size:0.85rem;">${numPedidos} pedido${numPedidos > 1 ? 's' : ''}</span>
         </div>
         <span class="cancelado-valor" style="color:#999;">R$ ${total.toFixed(2).replace('.', ',')}</span>
       </div>
@@ -1617,7 +1611,7 @@ function renderSubAbaExcluidas(el, comandasExcluidas) {
         </div>
       </div>
       <div class="cancelado-itens">
-        <strong style="color:#666;">Pedidos da comanda:</strong>
+        <strong style="color:var(--ink-soft);">Pedidos da comanda:</strong>
         ${itensHTML}
       </div>
       <div class="pedido-acoes" style="margin-top:0.8rem;">
@@ -1704,7 +1698,7 @@ function renderComandaCard(comanda, aberta) {
     }
 
     pedidosHTML += `
-      <div class="comanda-pedido pedido-card ${classeStatus}" style="border-left:none; box-shadow:none; margin:0.4rem 0; background:#fafafa;">
+      <div class="comanda-pedido pedido-card ${classeStatus}" style="border-left:none; box-shadow:none; margin:0.4rem 0; background:var(--surface-2);">
         <div class="pedido-header">
           <span class="pedido-hora">${hora} — ${p.nome}</span>
           ${badge}
@@ -1720,11 +1714,11 @@ function renderComandaCard(comanda, aberta) {
   if (aberta) {
     acaoComandaHTML = `
       <button class="btn-fechar-comanda btn btn-success btn-block" data-cadeira="${comanda.cadeira}" style="margin-top:0.6rem;">💰 Fechar comanda</button>
-      <button class="btn-excluir-comanda" data-cadeira="${comanda.cadeira}" style="background:white; color:#C0392B; border:2px solid #C0392B; padding:8px 14px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:0.4rem; width:100%; font-size:0.85rem;">🗑️ Excluir comanda</button>
+      <button class="btn-excluir-comanda" data-cadeira="${comanda.cadeira}" style="background:var(--surface); color:var(--danger); border:1.5px solid var(--danger); padding:8px 14px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:0.4rem; width:100%; font-size:0.85rem;">🗑️ Excluir comanda</button>
     `;
   } else {
     // Comanda fechada: só botão de excluir
-    acaoComandaHTML = `<button class="btn-excluir-comanda" data-cadeira="${comanda.cadeira}" style="background:white; color:#C0392B; border:2px solid #C0392B; padding:8px 14px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:0.6rem; width:100%; font-size:0.85rem;">🗑️ Excluir comanda</button>`;
+    acaoComandaHTML = `<button class="btn-excluir-comanda" data-cadeira="${comanda.cadeira}" style="background:var(--surface); color:var(--danger); border:1.5px solid var(--danger); padding:8px 14px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:0.6rem; width:100%; font-size:0.85rem;">🗑️ Excluir comanda</button>`;
   }
 
   wrapper.innerHTML = headerHTML + `<div class="comanda-pedidos">${pedidosHTML}</div>` + acaoComandaHTML;
@@ -1852,8 +1846,8 @@ function renderResumo() {
 
   const rEl = document.getElementById('rankingProdutos');
   rEl.innerHTML = ranking.length === 0
-    ? '<p style="color:#666;font-size:0.9rem;">Sem dados ainda</p>'
-    : ranking.slice(0, 10).map((r, i) => `<div style="padding:6px 0;border-bottom:1px solid #eee;font-size:0.9rem;"><strong>${i+1}.</strong> ${r[0]} — <span style="color:#003D5B;font-weight:bold;">${r[1]}x</span></div>`).join('');
+    ? '<p style="color:var(--ink-soft);font-size:0.9rem;">Sem dados ainda</p>'
+    : ranking.slice(0, 10).map((r, i) => `<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:0.9rem;"><strong>${i+1}.</strong> ${r[0]} — <span style="color:var(--accent-2);font-weight:bold;">${r[1]}x</span></div>`).join('');
 }
 
 // ==========================================================
@@ -2158,7 +2152,7 @@ function abrirModalFecharComanda(cadeira) {
   const horaAbertura = formatarDataCompleta(comanda.abertura);
 
   let itensHTML = `
-    <div style="background:#F5FAFE; padding:12px; border-radius:8px; margin-bottom:0.5rem; font-size:0.9rem;">
+    <div style="background:var(--surface-2); padding:12px; border-radius:8px; margin-bottom:0.5rem; font-size:0.9rem;">
       <strong>🪑 Cadeira ${cadeira}</strong><br>
       Aberta às <strong>${horaAbertura}</strong>
     </div>
@@ -2168,7 +2162,7 @@ function abrirModalFecharComanda(cadeira) {
     const hora = formatarDataCompleta(p.timestamp);
     itensHTML += `<div style="font-size:0.85rem; padding:4px 0; border-bottom:1px dotted #ccc;">${hora} — ${p.nome}: ${p.itens.map(i => `${i.quantidade}× ${i.nome}`).join(', ')} — <strong>R$ ${p.total.toFixed(2).replace('.', ',')}</strong></div>`;
   });
-  itensHTML += `<div style="margin-top:0.8rem; padding-top:0.6rem; border-top:2px solid #003D5B; display:flex; justify-content:space-between; font-weight:900; font-size:1.1rem; color:#003D5B;"><span>TOTAL:</span><span>R$ ${total.toFixed(2).replace('.', ',')}</span></div>`;
+  itensHTML += `<div style="margin-top:0.8rem; padding-top:0.6rem; border-top:2px solid var(--accent); display:flex; justify-content:space-between; font-weight:900; font-size:1.1rem; color:var(--ink);"><span>TOTAL:</span><span>R$ ${total.toFixed(2).replace('.', ',')}</span></div>`;
 
   document.getElementById('fecharComandaResumo').innerHTML = itensHTML;
   document.getElementById('modalFecharComanda').style.display = 'flex';
