@@ -986,6 +986,25 @@
       <div id="msgConfigSenha" style="margin-top:6px; font-size:0.85rem;"></div>
     </div>
 
+    <div class="caixa-ordem" style="margin-bottom:1rem;">
+      <h3>✉️ Alterar e-mail de acesso</h3>
+      <p style="color:var(--ink-soft); font-size:0.82rem; margin-bottom:0.6rem; line-height:1.4;">
+        E-mail usado para fazer login e receber recuperação de senha. Por segurança, só pode ser trocado a cada 60 dias.
+      </p>
+      <p id="emailAtualInfo" style="font-size:0.85rem; color:var(--ink-soft); margin-bottom:0.8rem;"></p>
+      <div id="blocoAlterarEmail">
+        <label style="display:block; font-weight:600; color:var(--ink-faint); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:5px;">Senha atual</label>
+        <input type="password" id="inputEmailSenhaAtual" autocomplete="current-password"
+          style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; font-size:1rem; margin-bottom:0.6rem; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);">
+        <label style="display:block; font-weight:600; color:var(--ink-faint); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:5px;">Novo e-mail</label>
+        <input type="email" id="inputNovoEmailConfig" autocomplete="username"
+          style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px; font-size:1rem; margin-bottom:0.6rem; background:var(--surface-2); color:var(--ink); font-family:var(--font-body);">
+        <button onclick="solicitarTrocaEmail()" id="btnTrocarEmail" class="btn btn-primary btn-block">✉️ Enviar link de confirmação</button>
+        <div id="msgTrocarEmail" style="margin-top:6px; font-size:0.85rem;"></div>
+      </div>
+      <p id="bloqueioTrocaEmail" style="display:none; font-size:0.85rem; color:var(--warning);"></p>
+    </div>
+
     <div class="caixa-ordem" style="background:var(--accent-soft); border:1px solid var(--accent);">
       <h3 style="color:var(--accent);">💡 Dicas importantes</h3>
       <ul style="font-size:0.85rem; color:var(--ink-soft); line-height:1.6; padding-left:1.2rem; margin:0;">
@@ -1239,6 +1258,7 @@ async function exigirLoginAdmin() {
 }
 
 await exigirLoginAdmin();
+renderStatusTrocaEmail(authInst.currentUser.uid);
 
 // Lista base de produtos (mesma do cardápio)
 let produtos = [
@@ -2357,6 +2377,66 @@ onValue(ref(db, `${DB_KEY}/config/senhaCancelamento`), (snap) => {
   const inp = document.getElementById('inputConfigSenha');
   if (inp && !inp.matches(':focus')) inp.value = v || '';
 });
+
+// ✉️ Alterar e-mail de acesso — cooldown de 60 dias contado a partir do
+// ultimo PEDIDO de troca (a regra do Firebase tambem impede escrever antes
+// disso, entao isso e so a UI refletindo o que a regra ja garante).
+function renderStatusTrocaEmail(uid) {
+  document.getElementById('emailAtualInfo').textContent = 'E-mail atual: ' + authInst.currentUser.email;
+  const bloco = document.getElementById('blocoAlterarEmail');
+  const bloqueioEl = document.getElementById('bloqueioTrocaEmail');
+  const SESSENTA_DIAS_MS = 60 * 24 * 60 * 60 * 1000;
+
+  get(ref(db, `admins/${uid}/emailAlteradoEm`)).then((snap) => {
+    const ultimaTroca = snap.val();
+    const restante = ultimaTroca ? SESSENTA_DIAS_MS - (Date.now() - ultimaTroca) : 0;
+    if (restante > 0) {
+      const dias = Math.ceil(restante / (24 * 60 * 60 * 1000));
+      bloco.style.display = 'none';
+      bloqueioEl.style.display = 'block';
+      bloqueioEl.textContent = `Você já solicitou uma troca de e-mail recentemente. Pode solicitar novamente em ${dias} dia(s).`;
+    } else {
+      bloco.style.display = 'block';
+      bloqueioEl.style.display = 'none';
+    }
+  });
+}
+
+async function solicitarTrocaEmail() {
+  const btn = document.getElementById('btnTrocarEmail');
+  const msg = document.getElementById('msgTrocarEmail');
+  const senhaAtual = document.getElementById('inputEmailSenhaAtual').value;
+  const novoEmail = document.getElementById('inputNovoEmailConfig').value.trim();
+
+  msg.textContent = '';
+  if (!senhaAtual || !novoEmail) {
+    msg.style.color = 'var(--danger)';
+    msg.textContent = 'Preencha a senha atual e o novo e-mail.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  try {
+    const user = authInst.currentUser;
+    const cred = EmailAuthProvider.credential(user.email, senhaAtual);
+    await reauthenticateWithCredential(user, cred);
+    await verifyBeforeUpdateEmail(user, novoEmail);
+    await update(ref(db, `admins/${user.uid}`), { emailAlteradoEm: Date.now() });
+    msg.style.color = 'var(--success)';
+    msg.textContent = `Link de confirmação enviado para ${novoEmail}. O e-mail só muda de fato depois que você clicar nele.`;
+    document.getElementById('inputEmailSenhaAtual').value = '';
+    document.getElementById('inputNovoEmailConfig').value = '';
+    renderStatusTrocaEmail(user.uid);
+  } catch (err) {
+    msg.style.color = 'var(--danger)';
+    msg.textContent = 'Erro: ' + err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✉️ Enviar link de confirmação';
+  }
+}
+window.solicitarTrocaEmail = solicitarTrocaEmail;
 
 // ⚙️ CONFIGURAÇÕES — autonomia da barraqueira
 // Carregar valor atual do WhatsApp e popular o input

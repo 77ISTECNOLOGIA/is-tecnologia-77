@@ -23,6 +23,13 @@
           // primeiro acesso) - so pode desligar a propria flag, nada mais
           // neste no (dbKey etc. seguem exclusivos do super-admin).
           ".write": "auth != null && auth.uid === $uid && newData.val() === false"
+        },
+
+        "emailAlteradoEm": {
+          // Marca quando o dono pediu a ultima troca de e-mail. So pode
+          // escrever de novo depois de 60 dias (cooldown reforcado aqui,
+          // nao so no cliente, senao dava pra burlar direto no devtools).
+          ".write": "auth != null && auth.uid === $uid && (!data.exists() || now - data.val() > 60*24*60*60*1000)"
         }
       }
     },
