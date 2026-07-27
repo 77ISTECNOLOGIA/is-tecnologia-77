@@ -870,6 +870,7 @@
       <label for="paNovaSenha">Crie sua nova senha</label>
       <input type="password" id="paNovaSenha" required autocomplete="new-password" minlength="6">
       <p class="erro" id="paErro"></p>
+      <p class="sucesso" id="paSucesso"></p>
       <button type="submit" id="btnPrimeiroAcesso">Salvar e continuar</button>
     </form>
   </div>
@@ -1085,7 +1086,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, get, onValue, set, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, verifyBeforeUpdateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAX6X6ZX__HxwamgN4wcx8p1jgoQUEWtjE",
@@ -1120,6 +1121,7 @@ async function exigirLoginAdmin() {
   const telaPrimeiroAcesso = document.getElementById('telaPrimeiroAcesso');
   const formPrimeiroAcesso = document.getElementById('formPrimeiroAcesso');
   const paErroEl           = document.getElementById('paErro');
+  const paSucessoEl        = document.getElementById('paSucesso');
   const btnPrimeiroAcesso  = document.getElementById('btnPrimeiroAcesso');
 
   document.getElementById('linkEsqueciSenha').addEventListener('click', (e) => {
@@ -1181,16 +1183,20 @@ async function exigirLoginAdmin() {
               try {
                 const cred = EmailAuthProvider.credential(user.email, senhaAtual);
                 await reauthenticateWithCredential(user, cred);
-                await updateEmail(user, novoEmail);
                 await updatePassword(user, novaSenha);
+                await verifyBeforeUpdateEmail(user, novoEmail);
                 await update(ref(db, `admins/${user.uid}`), { primeiroAcesso: false });
                 liberado = true;
-                telaPrimeiroAcesso.style.display = 'none';
-                resolve();
+                formPrimeiroAcesso.style.display = 'none';
+                paSucessoEl.textContent = 'Senha atualizada! Enviamos um link de confirmação para ' + novoEmail + ' — clique nele para finalizar a troca do e-mail. Entrando no painel...';
+                paSucessoEl.style.display = 'block';
+                setTimeout(() => {
+                  telaPrimeiroAcesso.style.display = 'none';
+                  resolve();
+                }, 3500);
               } catch (err) {
                 paErroEl.textContent = 'Erro: ' + err.message;
                 paErroEl.style.display = 'block';
-              } finally {
                 btnPrimeiroAcesso.disabled = false;
                 btnPrimeiroAcesso.textContent = 'Salvar e continuar';
               }
