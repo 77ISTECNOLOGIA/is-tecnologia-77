@@ -87,7 +87,7 @@
     margin-top: 0.3rem; position: relative;
   }
   .header-logout-btn {
-    position: absolute; top: 14px; right: 14px;
+    position: absolute; top: 14px; right: 14px; z-index: 2;
     display: flex; align-items: center; gap: 5px;
     background: var(--surface); border: 1.5px solid var(--border);
     color: var(--ink-soft); font-family: var(--font-body); font-weight: 600;
@@ -878,7 +878,7 @@
 <header>
   <button class="header-logout-btn" id="btnLogoutAdmin" title="Sair da conta">↩ Sair</button>
   <div class="header-inner">
-    <img src="" alt="IS Tecnologia 77" class="header-badge" style="object-fit:cover;">
+    <div class="header-badge">🌊</div>
     <h1>IS TECNOLOGIA 77</h1>
   </div>
   <p>Gerencie produtos, pedidos e configurações</p>
